@@ -1,0 +1,74 @@
+# Data-stage configuration. Loaded via galaxycbm.utils.config.load_config("data").
+#
+# Real values land in P1–P3. Everything here has a default so P0 tests can
+# instantiate a config without touching the network.
+
+survey:
+  primary: "gz_decals_gzevo"      # Galaxy Zoo DECaLS / GZ Evo (Walmsley et al.)
+  crossshift:
+    - "euclid_q1"                  # Filled in P8
+    - "hst_jwst_cosmos_web"        # Filled in P8
+
+download:
+  # Locate the current official access point during P1 — do NOT hardcode a
+  # guessed URL. This block is deliberately incomplete.
+  root: "data/raw"
+  cache: true
+  checksum: true
+  subsample:
+    n: 40000                       # a few×10^4 galaxies; scale up in P10
+    stratify_by: "gz_task_smooth_fraction"
+    seed: 20260101
+
+cutouts:
+  pixel_scale_arcsec: 0.262        # DECaLS native
+  size_pixels: 224                 # matches the Zoobot ConvNeXt input
+  bands: ["g", "r", "z"]
+  interp: "lanczos3"
+
+manifest:
+  path: "data/interim/manifest.parquet"
+  columns_required:
+    - "object_id"
+    - "survey"
+    - "image_path"
+    - "gz_task_smooth_fraction"
+
+# NaN / outlier policy — enforced in P2/P3.
+quality:
+  on_nan: "flag"                   # one of: drop | impute | flag
+  on_statmorph_failure: "flag"
+  min_snr: 3.0
+
+# Stage-2 statmorph knobs. See src/galaxycbm/data/statmorph_concepts.py.
+statmorph:
+  gain: 1.0                        # e-/ADU. Placeholder — irrelevant for the GZ Evo pre-rendered PNGs.
+  survey_suffixes: ["dr5", "dr8"]  # vote-fraction columns to keep alongside concepts
+  # Per-shard cap. Statmorph runs ~100-500 ms per galaxy (Sérsic + Petro +
+  # Gini). A default train shard has ~22k rows → nearly an hour uncapped.
+  # Keep the cap tight for pipeline development; remove or raise for the
+  # final headline run.
+  #max_rows_per_shard: 500
+  # Parallel workers for the statmorph pass (ProcessPoolExecutor -- one
+  # process per worker; statmorph/scipy hold the GIL so threads don't
+  # help). Tune to your machine's performance-core count; oversubscribing
+  # past that gives diminishing or negative returns. 1 = serial (old
+  # behaviour). Each worker's BLAS thread count is pinned to 1 internally
+  # so N processes don't each also spawn multi-threaded BLAS and thrash.
+  n_workers: 6
+
+# Stage-3 label build. See src/galaxycbm/data/labels.py.
+labels:
+  drop_flagged: true               # skip rows with statmorph_quality_flag != 0
+  primary_datasets: ["gz_desi"]    # HF gz_evo bundles DR5+DR8 campaigns under `gz_desi`;
+                                    # the dr5/dr8 vote-fraction *columns* still drive the tree.
+                                    # Euclid/HST arrive as separate test sets in P8.
+  suffix: "dr5"                    # vote-fraction suffix used by the decision tree
+  clean_sample_threshold: 0.5      # argmax fraction must clear this to count
+  drop_unclassified: true
+  dedup_radius_arcsec: 3.0         # cross-split near-duplicate cut
+  splits:
+    train: 0.60
+    val: 0.15
+    calibration: 0.10
+    test: 0.15

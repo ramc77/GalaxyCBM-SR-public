@@ -1,0 +1,8 @@
+{
+  "hubble_class": "Irr",
+  "equation_str": "exp(0.026670054 - square((merging__none - 0.26985133) / square(square(square(-0.2863448 - merging__merger)))))",
+  "latex": "e^{0.026670054 - \\frac{\\left(merging^{none} - 0.26985133\\right)^{2}}{\\left(- merging^{merger} - 0.2863448\\right)^{16}}}",
+  "complexity": 14,
+  "pysr_score": 0.7218398267802545,
+  "cv_accuracy": 0.9989999999999999
+}

@@ -1,0 +1,74 @@
+{
+  "config": {
+    "conformal": {
+      "alpha": 0.1,
+      "calibration_split_fraction": 0.15,
+      "coverage_tolerance": "auto",
+      "method": "lac",
+      "per_class_report": true,
+      "seed": 20260101,
+      "selective": {
+        "abstain_when_set_size_ge": 2
+      }
+    }
+  },
+  "config_hash": "fcdcb7ba83f895da0392e1c6b40de4873d7ebe9102905ffab49dd26b27631582",
+  "extra": {
+    "coverage_tolerance": 0.03849001794597505,
+    "coverage_within_tolerance": true,
+    "metrics_json": "results/uncertainty/metrics.json",
+    "n_calibration": 4049,
+    "n_test": 6075,
+    "per_class_csv": "results/uncertainty/per_class_coverage.csv",
+    "selective_curve_csv": "results/uncertainty/selective_curve.csv",
+    "selective_risk_png": "results/uncertainty/selective_risk.png",
+    "summary": {
+      "alpha": 0.1,
+      "classes": [
+        "E",
+        "Irr",
+        "S0",
+        "Sa",
+        "Sb",
+        "Sc",
+        "Sd"
+      ],
+      "coverage_gap": -0.010946502057613161,
+      "empirical_coverage": 0.8890534979423869,
+      "empty_fraction": 0.0,
+      "mean_set_size": 1.4572839506172839,
+      "median_set_size": 1.0,
+      "method": "lac",
+      "n": 6075,
+      "nominal_coverage": 0.9,
+      "singleton_fraction": 0.6594238683127572
+    }
+  },
+  "galaxycbm_version": "0.0.1",
+  "git_dirty": true,
+  "git_sha": "fd2934aa04b691a94406eda858ca7339db62789b",
+  "packages": {
+    "astropy": "7.2.2",
+    "hydra-core": "1.3.4",
+    "juliacall": "0.9.26",
+    "mapie": "1.4.1",
+    "matplotlib": "3.11.0",
+    "numpy": "2.2.6",
+    "omegaconf": "2.3.1",
+    "pandas": "2.3.3",
+    "photutils": "2.3.0",
+    "pyarrow": "20.0.0",
+    "pysr": "1.5.10",
+    "scikit-image": "0.25.2",
+    "scikit-learn": "1.9.0",
+    "shap": "0.51.0",
+    "statmorph": "0.7.2",
+    "torch": "2.11.0",
+    "xgboost": "2.1.4",
+    "zoobot": "2.9.0"
+  },
+  "platform": "macOS-26.3.1-arm64-arm-64bit",
+  "python": "3.11.9",
+  "seed": 20260101,
+  "stage": "uncertainty"
+}

@@ -1,0 +1,8 @@
+{
+  "hubble_class": "Sc",
+  "equation_str": "square(((((bulge_size__dominant - spiral_winding__loose) / exp(bulge_size__none)) / exp(bulge_size__none)) - spiral_winding__medium) * (-0.10453457 - (smooth_or_featured__featured_or_disk / exp((has_spiral_arms__no + merging__merger) + 0.17028452)))) * disk_edge_on__no",
+  "latex": "disk^{no}_{edge on} \\left(- spiral^{medium}_{winding} + \\frac{bulge^{dominant}_{size} - spiral^{loose}_{winding}}{e^{bulge^{none}_{size}} e^{bulge^{none}_{size}}}\\right)^{2} \\left(- \\frac{smooth^{featured}_{or featured or disk}}{e^{has^{no}_{spiral arms} + merging^{merger} + 0.17028452}} - 0.10453457\\right)^{2}",
+  "complexity": 25,
+  "pysr_score": 0.0008419141931160053,
+  "cv_accuracy": 0.9696695538464535
+}

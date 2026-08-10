@@ -1,0 +1,8 @@
+{
+  "hubble_class": "Sc",
+  "equation_str": "(spiral_winding__loose + (((merging__none * spiral_arm_count__cant_tell) - (spiral_winding__medium * -1.03083)) * spiral_winding__medium)) * ((smooth_or_featured__featured_or_disk * (sqrt(disk_edge_on__no) - merging__merger)) * (0.92453164 - has_spiral_arms__no))",
+  "latex": "smooth^{featured}_{or featured or disk} \\left(0.92453164 - has^{no}_{spiral arms}\\right) \\left(\\sqrt{disk^{no}_{edge on}} - merging^{merger}\\right) \\left(spiral^{loose}_{winding} + spiral^{medium}_{winding} \\left(merging^{none} spiral^{cant}_{arm count tell} + 1.03083 spiral^{medium}_{winding}\\right)\\right)",
+  "complexity": 22,
+  "pysr_score": 0.00120223199622617,
+  "cv_accuracy": 0.9655887230514095
+}

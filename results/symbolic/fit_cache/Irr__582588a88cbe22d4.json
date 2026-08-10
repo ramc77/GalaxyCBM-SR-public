@@ -1,0 +1,8 @@
+{
+  "hubble_class": "Irr",
+  "equation_str": "abs((0.02885514 - (merging__merger * exp((merging__merger + merging__none) - merging__major_disturbance))) * ((smoothness * (merging__none * exp((square(how_rounded__round) + spiral_arm_count__more_than_4) + bar__strong))) - 0.36367664))",
+  "latex": "\\left|{\\left(merging^{merger} e^{- merging^{major}_{disturbance} + merging^{merger} + merging^{none}} - 0.02885514\\right) \\left(merging^{none} smoothness e^{bar^{strong} + \\left(how^{round}_{rounded}\\right)^{2} + spiral^{more}_{arm count than 4}} - 0.36367664\\right)}\\right|",
+  "complexity": 25,
+  "pysr_score": 0.0002611011076199038,
+  "cv_accuracy": 0.9638255767372412
+}

@@ -1,0 +1,104 @@
+{
+  "config": {
+    "cutouts": {
+      "bands": [
+        "g",
+        "r",
+        "z"
+      ],
+      "interp": "lanczos3",
+      "pixel_scale_arcsec": 0.262,
+      "size_pixels": 224
+    },
+    "download": {
+      "cache": true,
+      "checksum": true,
+      "root": "data/raw",
+      "subsample": {
+        "n": 40000,
+        "seed": 20260101,
+        "stratify_by": "gz_task_smooth_fraction"
+      }
+    },
+    "labels": {
+      "clean_sample_threshold": 0.5,
+      "dedup_radius_arcsec": 3.0,
+      "drop_flagged": true,
+      "drop_unclassified": true,
+      "primary_datasets": [
+        "gz_desi"
+      ],
+      "splits": {
+        "calibration": 0.1,
+        "test": 0.15,
+        "train": 0.6,
+        "val": 0.15
+      },
+      "suffix": "dr5"
+    },
+    "manifest": {
+      "columns_required": [
+        "object_id",
+        "survey",
+        "image_path",
+        "gz_task_smooth_fraction"
+      ],
+      "path": "data/interim/manifest.parquet"
+    },
+    "quality": {
+      "min_snr": 3.0,
+      "on_nan": "flag",
+      "on_statmorph_failure": "flag"
+    },
+    "statmorph": {
+      "gain": 1.0,
+      "n_workers": 6,
+      "survey_suffixes": [
+        "dr5",
+        "dr8"
+      ]
+    },
+    "survey": {
+      "crossshift": [
+        "euclid_q1",
+        "hst_jwst_cosmos_web"
+      ],
+      "primary": "gz_decals_gzevo"
+    }
+  },
+  "config_hash": "be921a3581e8ca2e8f8b716c030d98db5e7d3689414f46c4576964cb66a2782e",
+  "extra": {
+    "flagged_fraction": 0.4810683046535086,
+    "n_flagged": 127816,
+    "n_rows": 265692,
+    "n_shards": 12,
+    "output_manifest": "data/interim/manifest_with_concepts.parquet"
+  },
+  "galaxycbm_version": "0.0.1",
+  "git_dirty": true,
+  "git_sha": "e15ad48583d1b9a68321c31db07c774b11acdefd",
+  "packages": {
+    "astropy": "7.2.2",
+    "hydra-core": "1.3.4",
+    "juliacall": "0.9.26",
+    "mapie": "1.4.1",
+    "matplotlib": "3.11.0",
+    "numpy": "2.2.6",
+    "omegaconf": "2.3.1",
+    "pandas": "2.3.3",
+    "photutils": "2.3.0",
+    "pyarrow": "20.0.0",
+    "pysr": "1.5.10",
+    "scikit-image": "0.25.2",
+    "scikit-learn": "1.9.0",
+    "shap": "0.51.0",
+    "statmorph": "0.7.2",
+    "torch": "2.11.0",
+    "xgboost": "2.1.4",
+    "zoobot": "2.9.0"
+  },
+  "platform": "macOS-26.3.1-arm64-arm-64bit",
+  "python": "3.11.9",
+  "seed": 20260101,
+  "stage": "data.concepts"
+}

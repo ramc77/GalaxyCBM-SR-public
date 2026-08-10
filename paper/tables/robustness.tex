@@ -1,0 +1,13 @@
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lrrrrrrrrr}
+\toprule
+survey & n\_ref & n\_shift & delta\_accuracy & delta\_macro\_f1 & delta\_kappa & delta\_ece & delta\_coverage & rule\_mean\_jaccard & rule\_top\_k\_overlap \\
+\midrule
+euclid\_q1 & 6075 & 161395 & 0.052 & 0.204 & 0.170 & 0.083 & 0.074 & 0.420 & 0.429 \\
+\bottomrule
+\end{tabular}
+\caption{Cross-survey shift relative to the DECaLS reference (Stage 8). Rule stability is per-class Jaccard on features used; top-$k$ overlap is Jaccard on the top-5 dominant concepts overall.}
+\label{tab:robustness}
+\end{table}

@@ -1,0 +1,82 @@
+# Concept vocabulary: two provenance classes (perceptual + structural).
+#
+# Perceptual concept `name` fields MUST match the DR5 task keys used in
+# src/galaxycbm/data/labels.py::DR5_TASK_ANSWERS — because that's what P3
+# writes as columns in data/processed/dataset.parquet. Values likewise
+# must be the exact DR5 answer strings (argmax outputs from P3).
+#
+# Physical concept `name` fields must match the column names in
+# src/galaxycbm/data/statmorph_concepts.py::CONCEPT_COLS.
+
+perceptual:
+  # Supervised on GZ DR5 vote fractions. Values are DR5 answer strings.
+  - name: "smooth-or-featured"
+    type: "categorical"
+    values: ["smooth", "featured-or-disk", "artifact"]
+    source: "gz_task_smooth_or_featured"
+  - name: "disk-edge-on"
+    type: "categorical"
+    values: ["yes", "no"]
+    source: "gz_task_edge_on"
+  - name: "bar"
+    type: "categorical"
+    values: ["strong", "weak", "no"]
+    source: "gz_task_bar"
+  - name: "has-spiral-arms"
+    type: "categorical"
+    values: ["yes", "no"]
+    source: "gz_task_spiral"
+  - name: "bulge-size"
+    type: "ordinal"
+    values: ["dominant", "large", "moderate", "small", "none"]
+    source: "gz_task_bulge"
+  - name: "how-rounded"
+    type: "ordinal"
+    values: ["round", "in-between", "cigar-shaped"]
+    source: "gz_task_rounded"
+  - name: "edge-on-bulge"
+    type: "categorical"
+    values: ["boxy", "rounded", "none"]
+    source: "gz_task_edge_on_bulge"
+  - name: "spiral-winding"
+    type: "ordinal"
+    values: ["tight", "medium", "loose"]
+    source: "gz_task_arm_winding"
+  - name: "spiral-arm-count"
+    type: "ordinal"
+    values: ["1", "2", "3", "4", "more-than-4", "cant-tell"]
+    source: "gz_task_arm_count"
+  - name: "merging"
+    type: "categorical"
+    values: ["none", "minor-disturbance", "major-disturbance", "merger"]
+    source: "gz_task_merger"
+
+physical:
+  # Computed by statmorph on the cutouts; regression targets. Names must
+  # match galaxycbm.data.statmorph_concepts.CONCEPT_COLS.
+  - name: "concentration"
+    type: "continuous"
+    source: "statmorph.concentration"
+  - name: "asymmetry"
+    type: "continuous"
+    source: "statmorph.asymmetry"
+  - name: "smoothness"
+    type: "continuous"
+    source: "statmorph.smoothness"
+  - name: "gini"
+    type: "continuous"
+    source: "statmorph.gini"
+  - name: "m20"
+    type: "continuous"
+    source: "statmorph.m20"
+  - name: "sersic_n"
+    type: "continuous"
+    source: "statmorph.sersic_n"
+    clip: [0.3, 10.0]
+  - name: "r_eff_pixels"
+    type: "continuous"
+    source: "statmorph.rhalf_ellip"
+
+target:
+  name: "hubble_type"
+  values: ["E", "S0", "Sa", "Sb", "Sc", "Sd", "Irr"]

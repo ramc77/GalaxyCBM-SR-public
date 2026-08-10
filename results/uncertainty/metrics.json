@@ -1,0 +1,21 @@
+{
+  "alpha": 0.1,
+  "classes": [
+    "E",
+    "Irr",
+    "S0",
+    "Sa",
+    "Sb",
+    "Sc",
+    "Sd"
+  ],
+  "coverage_gap": -0.010946502057613161,
+  "empirical_coverage": 0.8890534979423869,
+  "empty_fraction": 0.0,
+  "mean_set_size": 1.4572839506172839,
+  "median_set_size": 1.0,
+  "method": "lac",
+  "n": 6075,
+  "nominal_coverage": 0.9,
+  "singleton_fraction": 0.6594238683127572
+}

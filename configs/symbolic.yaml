@@ -1,0 +1,39 @@
+# Stage-2 symbolic decision head — PySR. Values follow the SR-separation
+# literature (one-vs-rest, small complexity budget). Confirm the installed
+# PySR API in P5; the fields below map to PySRRegressor kwargs.
+
+pysr:
+  niterations: 100
+  populations: 30
+  population_size: 33
+  maxsize: 25                      # complexity budget: nodes per expression
+  parsimony: 3.2e-3
+  binary_operators: ["+", "-", "*", "/"]
+  unary_operators: ["exp", "log", "square", "sqrt", "abs"]
+  # Protected operators / hard bounds — configured in P5 as constraints, so
+  # log(x) and sqrt(x) can't blow up on out-of-domain concept values.
+  constraints:
+    log: 5                         # complexity cap for arg of log
+    sqrt: 5
+  model_selection: "best"          # Pareto: best score at low complexity
+  loss: "loss(x, y) = (x - y)^2"
+  turbo: true
+
+training:
+  formulation: "one_vs_rest"       # one PySR run per Hubble class
+  cv:
+    n_splits: 5
+    stratified: true
+  max_wall_seconds_per_class: 900  # 15 min — bump for the final headline run
+
+export:
+  latex_path: "results/symbolic/rules.tex"
+  plain_path: "results/symbolic/rules.txt"
+  python_path: "src/galaxycbm/symbolic/exported_rules.py"
+
+seed: 20260101
+
+# Cap rows fed to PySR when refitting on a shifted survey (P8). Structural
+# rule-stability doesn't need the whole survey; a stratified subsample keeps
+# wall time reasonable.
+robustness_max_train_rows: 3000

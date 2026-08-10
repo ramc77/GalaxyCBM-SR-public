@@ -1,0 +1,8 @@
+{
+  "hubble_class": "Sa",
+  "equation_str": "(bulge_size__large * ((exp((has_spiral_arms__no / smooth_or_featured__featured_or_disk) * log(edge_on_bulge__boxy)) * 3.33811) * square(smoothness - square(spiral_winding__tight - smoothness)))) * (sersic_n + spiral_arm_count__4)",
+  "latex": "3.33811 bulge^{large}_{size} \\left(sersic_{n} + spiral^{4}_{arm count}\\right) \\left(smoothness - \\left(- smoothness + spiral^{tight}_{winding}\\right)^{2}\\right)^{2} e^{\\frac{has^{no}_{spiral arms} \\log{\\left(edge^{boxy}_{on bulge} \\right)}}{smooth^{featured}_{or featured or disk}}}",
+  "complexity": 23,
+  "pysr_score": 0.0020530621254980118,
+  "cv_accuracy": 0.9983416252072969
+}

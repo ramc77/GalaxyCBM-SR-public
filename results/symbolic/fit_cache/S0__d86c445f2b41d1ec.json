@@ -1,0 +1,8 @@
+{
+  "hubble_class": "S0",
+  "equation_str": "(square((has_spiral_arms__no * disk_edge_on__no) - (disk_edge_on__no - (((abs(smooth_or_featured__featured_or_disk + -0.5972566) * -2.1746538) - square(merging__merger)) + (smooth_or_featured__featured_or_disk + 0.91270864)))) * smooth_or_featured__featured_or_disk) * smooth_or_featured__featured_or_disk",
+  "latex": "smooth^{featured}_{or featured or disk} smooth^{featured}_{or featured or disk} \\left(disk^{no}_{edge on} has^{no}_{spiral arms} - \\left(disk^{no}_{edge on} - \\left(- \\left(merging^{merger}\\right)^{2} + smooth^{featured}_{or featured or disk} + \\left|{smooth^{featured}_{or featured or disk} - 0.5972566}\\right| \\left(-2.1746538\\right) + 0.91270864\\right)\\right)\\right)^{2}",
+  "complexity": 24,
+  "pysr_score": 0.044638646375906366,
+  "cv_accuracy": 0.9570000000000001
+}

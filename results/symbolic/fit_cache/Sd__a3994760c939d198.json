@@ -1,0 +1,8 @@
+{
+  "hubble_class": "Sd",
+  "equation_str": "sqrt(bulge_size__none * spiral_arm_count__2) * ((disk_edge_on__no * square(square(square(spiral_winding__loose)) * smooth_or_featured__featured_or_disk)) * (((exp(sqrt(bar__no) + merging__major_disturbance) * edge_on_bulge__rounded) - has_spiral_arms__no) + 1.193928))",
+  "latex": "disk^{no}_{edge on} \\left(smooth^{featured}_{or featured or disk}\\right)^{2} \\left(spiral^{loose}_{winding}\\right)^{8} \\sqrt{bulge^{none}_{size} spiral^{2}_{arm count}} \\left(edge^{rounded}_{on bulge} e^{\\sqrt{bar^{no}} + merging^{major}_{disturbance}} - has^{no}_{spiral arms} + 1.193928\\right)",
+  "complexity": 25,
+  "pysr_score": 0.002557177845116311,
+  "cv_accuracy": 0.9970978441127695
+}

@@ -1,0 +1,8 @@
+{
+  "hubble_class": "Sb",
+  "equation_str": "(smooth_or_featured__featured_or_disk - merging__merger) * ((disk_edge_on__no * sqrt(spiral_winding__tight)) * (0.98932743 - has_spiral_arms__no))",
+  "latex": "disk^{no}_{edge on} \\sqrt{spiral^{tight}_{winding}} \\left(0.98932743 - has^{no}_{spiral arms}\\right) \\left(- merging^{merger} + smooth^{featured}_{or featured or disk}\\right)",
+  "complexity": 12,
+  "pysr_score": 0.019677294576070942,
+  "cv_accuracy": 0.9635157545605308
+}

@@ -1,0 +1,16 @@
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lrrrrrrr}
+\toprule
+model & n & accuracy & macro\_f1 & cohen\_kappa & interpretability\_cost & interpretability\_kind & note \\
+\midrule
+galaxycbm\_symbolic & 6075 & 0.787 & 0.462 & 0.571 & 153 & intrinsic & -- \\
+dense\_linear\_cbm & 6075 & 0.787 & 0.457 & 0.572 & 273 & intrinsic & -- \\
+xgboost\_concepts & 6075 & 0.786 & 0.450 & 0.570 & 39 & post-hoc-required & -- \\
+endtoend\_convnext & 6075 & 0.802 & 0.448 & 0.601 & 14957047 & black-box & -- \\
+\bottomrule
+\end{tabular}
+\caption{Baselines and ablations on the validation split (Stage 7). Interpretability cost is expression complexity for the symbolic head, non-zero coefficient count for the linear CBM, non-zero feature-importance count for XGBoost, and trainable parameter count for the end-to-end CNN.}
+\label{tab:baselines}
+\end{table}

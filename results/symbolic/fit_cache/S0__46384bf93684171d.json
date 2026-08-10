@@ -1,0 +1,8 @@
+{
+  "hubble_class": "S0",
+  "equation_str": "smooth_or_featured__featured_or_disk * exp(-0.32609177 / square(square((merging__merger - ((0.17474632 / disk_edge_on__no) + has_spiral_arms__no)) + -0.27225325)))",
+  "latex": "smooth^{featured}_{or featured or disk} e^{- \\frac{0.32609177}{\\left(merging^{merger} - \\left(has^{no}_{spiral arms} + \\frac{0.17474632}{disk^{no}_{edge on}}\\right) - 0.27225325\\right)^{4}}}",
+  "complexity": 16,
+  "pysr_score": 0.0014428848645096205,
+  "cv_accuracy": 0.9349087893864013
+}

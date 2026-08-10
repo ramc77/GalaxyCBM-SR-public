@@ -1,0 +1,8 @@
+{
+  "hubble_class": "Irr",
+  "equation_str": "merging__merger * (((merging__none + ((spiral_arm_count__4 + bar__strong) * 1.6544013)) * ((gini * spiral_arm_count__cant_tell) + (disk_edge_on__no + merging__merger))) + merging__merger)",
+  "latex": "merging^{merger} \\left(merging^{merger} + \\left(merging^{none} + \\left(bar^{strong} + spiral^{4}_{arm count}\\right) 1.6544013\\right) \\left(disk^{no}_{edge on} + gini spiral^{cant}_{arm count tell} + merging^{merger}\\right)\\right)",
+  "complexity": 19,
+  "pysr_score": 0.0006224213589202174,
+  "cv_accuracy": 0.9587064676616915
+}

@@ -1,0 +1,177 @@
+{
+  "config": {
+    "symbolic": {
+      "export": {
+        "latex_path": "results/symbolic/rules.tex",
+        "plain_path": "results/symbolic/rules.txt",
+        "python_path": "src/galaxycbm/symbolic/exported_rules.py"
+      },
+      "pysr": {
+        "binary_operators": [
+          "+",
+          "-",
+          "*",
+          "/"
+        ],
+        "constraints": {
+          "log": 5,
+          "sqrt": 5
+        },
+        "loss": "loss(x, y) = (x - y)^2",
+        "maxsize": 25,
+        "model_selection": "best",
+        "niterations": 100,
+        "parsimony": 0.0032,
+        "population_size": 33,
+        "populations": 30,
+        "turbo": true,
+        "unary_operators": [
+          "exp",
+          "log",
+          "square",
+          "sqrt",
+          "abs"
+        ]
+      },
+      "robustness_max_train_rows": 3000,
+      "seed": 20260101,
+      "training": {
+        "cv": {
+          "n_splits": 5,
+          "stratified": true
+        },
+        "formulation": "one_vs_rest",
+        "max_wall_seconds_per_class": 900
+      }
+    }
+  },
+  "config_hash": "993ce325da421022ae235518e083835a9b9668a132a9fa305aae08e2c0a24748",
+  "extra": {
+    "classes": [
+      "E",
+      "Irr",
+      "S0",
+      "Sa",
+      "Sb",
+      "Sc",
+      "Sd"
+    ],
+    "max_complexity": 25,
+    "metrics": {
+      "accuracy": 0.7871604938271605,
+      "cohen_kappa": 0.5709211666327354,
+      "confusion_matrix": [
+        [
+          3763,
+          55,
+          151,
+          0,
+          49,
+          33,
+          1
+        ],
+        [
+          170,
+          124,
+          20,
+          0,
+          21,
+          9,
+          0
+        ],
+        [
+          250,
+          12,
+          319,
+          1,
+          42,
+          16,
+          2
+        ],
+        [
+          5,
+          0,
+          2,
+          0,
+          4,
+          1,
+          0
+        ],
+        [
+          99,
+          4,
+          34,
+          1,
+          400,
+          97,
+          1
+        ],
+        [
+          68,
+          14,
+          23,
+          0,
+          84,
+          172,
+          2
+        ],
+        [
+          5,
+          0,
+          2,
+          0,
+          1,
+          14,
+          4
+        ]
+      ],
+      "labels": [
+        "E",
+        "Irr",
+        "S0",
+        "Sa",
+        "Sb",
+        "Sc",
+        "Sd"
+      ],
+      "macro_f1": 0.46211641313952734,
+      "n": 6075
+    },
+    "metrics_json": "results/symbolic/metrics.json",
+    "n_features": 39,
+    "n_train": 24299,
+    "n_val": 6075,
+    "pareto_png": "results/symbolic/pareto.png",
+    "rule_table_csv": "results/symbolic/rule_table.csv",
+    "rules_py": "src/galaxycbm/symbolic/exported_rules.py",
+    "rules_tex": "results/symbolic/rules.tex",
+    "rules_txt": "results/symbolic/rules.txt"
+  },
+  "galaxycbm_version": "0.0.1",
+  "git_dirty": true,
+  "git_sha": "fd2934aa04b691a94406eda858ca7339db62789b",
+  "packages": {
+    "astropy": "7.2.2",
+    "hydra-core": "1.3.4",
+    "juliacall": "0.9.26",
+    "mapie": "1.4.1",
+    "matplotlib": "3.11.0",
+    "numpy": "2.2.6",
+    "omegaconf": "2.3.1",
+    "pandas": "2.3.3",
+    "photutils": "2.3.0",
+    "pyarrow": "20.0.0",
+    "pysr": "1.5.10",
+    "scikit-image": "0.25.2",
+    "scikit-learn": "1.9.0",
+    "shap": "0.51.0",
+    "statmorph": "0.7.2",
+    "torch": "2.11.0",
+    "xgboost": "2.1.4",
+    "zoobot": "2.9.0"
+  },
+  "platform": "macOS-26.3.1-arm64-arm-64bit",
+  "python": "3.11.9",
+  "seed": 20260101,
+  "stage": "symbolic"
+}

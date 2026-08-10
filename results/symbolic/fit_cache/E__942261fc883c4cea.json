@@ -1,0 +1,8 @@
+{
+  "hubble_class": "E",
+  "equation_str": "(((sqrt(smooth_or_featured__artifact) + merging__minor_disturbance) * 2.0273051) + (merging__major_disturbance + (sqrt(merging__none) * merging__none))) * smooth_or_featured__smooth",
+  "latex": "smooth^{smooth}_{or featured} \\left(merging^{major}_{disturbance} + 2.0273051 merging^{minor}_{disturbance} + \\left(merging^{none}\\right)^{\\frac{3}{2}} + 2.0273051 \\sqrt{smooth^{artifact}_{or featured}}\\right)",
+  "complexity": 15,
+  "pysr_score": 0.0003313590409436694,
+  "cv_accuracy": 0.8956882255389719
+}

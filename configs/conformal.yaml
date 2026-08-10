@@ -1,0 +1,19 @@
+# Stage-3 conformal wrapper — MAPIE split conformal. Confirm the exact class
+# name in P6 (MAPIE's classification API is: SplitConformalClassifier /
+# MapieClassifier depending on the installed version).
+
+alpha: 0.10                        # target coverage 1 - alpha = 90%
+method: "lac"                      # least-ambiguous set — solid default
+                                   # for multiclass; APS is an ablation in P6.
+calibration_split_fraction: 0.15   # peeled off the training set; disjoint
+                                   # from val AND test AND cross-survey.
+per_class_report: true
+
+selective:
+  # For the selective-accuracy vs abstention curve in P6.
+  abstain_when_set_size_ge: 2
+
+# Coverage acceptance gate. "auto" → 3 * √(1/n_test) (finite-sample scale).
+coverage_tolerance: "auto"
+
+seed: 20260101

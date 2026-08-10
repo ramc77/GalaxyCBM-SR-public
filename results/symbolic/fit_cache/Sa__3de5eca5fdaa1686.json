@@ -1,0 +1,8 @@
+{
+  "hubble_class": "Sa",
+  "equation_str": "((spiral_winding__tight * ((bulge_size__large * (disk_edge_on__no + (disk_edge_on__no - how_rounded__round))) + bulge_size__dominant)) * (smooth_or_featured__smooth + -0.7086136)) * ((square(has_spiral_arms__no) - spiral_winding__loose) + -1.0991837)",
+  "latex": "spiral^{tight}_{winding} \\left(bulge^{dominant}_{size} + bulge^{large}_{size} \\left(disk^{no}_{edge on} + disk^{no}_{edge on} - how^{round}_{rounded}\\right)\\right) \\left(smooth^{smooth}_{or featured} - 0.7086136\\right) \\left(\\left(has^{no}_{spiral arms}\\right)^{2} - spiral^{loose}_{winding} - 1.0991837\\right)",
+  "complexity": 22,
+  "pysr_score": 0.01621962870373711,
+  "cv_accuracy": 0.9809999999999999
+}

@@ -1,0 +1,34 @@
+# Every number the paper will cite must have a dotted path here that resolves
+# in results/metrics.json. `optional: true` marks claims that rely on stages
+# only runnable on Linux (Stage 1, SHAP/CNN baselines) — the eval script warns
+# but doesn't fail the CI when they're missing.
+
+claims:
+  # Stage 2 — symbolic decision head
+  - path: stages.symbolic.metrics.accuracy
+  - path: stages.symbolic.metrics.macro_f1
+  - path: stages.symbolic.metrics.cohen_kappa
+  - path: stages.symbolic.metrics.confusion_matrix
+  - path: stages.symbolic.metrics.labels
+  - path: stages.symbolic.rules
+
+  # Stage 3 — conformal wrapper
+  - path: stages.uncertainty.summary.empirical_coverage
+  - path: stages.uncertainty.summary.nominal_coverage
+  - path: stages.uncertainty.summary.mean_set_size
+  - path: stages.uncertainty.summary.singleton_fraction
+  - path: stages.uncertainty.per_class_coverage
+  - path: stages.uncertainty.selective_curve
+
+  # Stage 7 — baselines
+  - path: stages.baselines.rows
+  - path: stages.baselines.fidelity
+
+  # Stage 8 — cross-survey robustness
+  - path: stages.robustness.table
+
+  # Stage 1 — concept predictor (Linux/GPU only; optional locally)
+  - path: stages.concepts.run_json.extra.heads_passing_baseline
+    optional: true
+  - path: stages.concepts.fidelity
+    optional: true

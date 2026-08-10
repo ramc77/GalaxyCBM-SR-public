@@ -1,0 +1,241 @@
+{
+  "config": {
+    "concepts": {
+      "perceptual": [
+        {
+          "name": "smooth-or-featured",
+          "source": "gz_task_smooth_or_featured",
+          "type": "categorical",
+          "values": [
+            "smooth",
+            "featured-or-disk",
+            "artifact"
+          ]
+        },
+        {
+          "name": "disk-edge-on",
+          "source": "gz_task_edge_on",
+          "type": "categorical",
+          "values": [
+            "yes",
+            "no"
+          ]
+        },
+        {
+          "name": "bar",
+          "source": "gz_task_bar",
+          "type": "categorical",
+          "values": [
+            "strong",
+            "weak",
+            "no"
+          ]
+        },
+        {
+          "name": "has-spiral-arms",
+          "source": "gz_task_spiral",
+          "type": "categorical",
+          "values": [
+            "yes",
+            "no"
+          ]
+        },
+        {
+          "name": "bulge-size",
+          "source": "gz_task_bulge",
+          "type": "ordinal",
+          "values": [
+            "dominant",
+            "large",
+            "moderate",
+            "small",
+            "none"
+          ]
+        },
+        {
+          "name": "how-rounded",
+          "source": "gz_task_rounded",
+          "type": "ordinal",
+          "values": [
+            "round",
+            "in-between",
+            "cigar-shaped"
+          ]
+        },
+        {
+          "name": "edge-on-bulge",
+          "source": "gz_task_edge_on_bulge",
+          "type": "categorical",
+          "values": [
+            "boxy",
+            "rounded",
+            "none"
+          ]
+        },
+        {
+          "name": "spiral-winding",
+          "source": "gz_task_arm_winding",
+          "type": "ordinal",
+          "values": [
+            "tight",
+            "medium",
+            "loose"
+          ]
+        },
+        {
+          "name": "spiral-arm-count",
+          "source": "gz_task_arm_count",
+          "type": "ordinal",
+          "values": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "more-than-4",
+            "cant-tell"
+          ]
+        },
+        {
+          "name": "merging",
+          "source": "gz_task_merger",
+          "type": "categorical",
+          "values": [
+            "none",
+            "minor-disturbance",
+            "major-disturbance",
+            "merger"
+          ]
+        }
+      ],
+      "physical": [
+        {
+          "name": "concentration",
+          "source": "statmorph.concentration",
+          "type": "continuous"
+        },
+        {
+          "name": "asymmetry",
+          "source": "statmorph.asymmetry",
+          "type": "continuous"
+        },
+        {
+          "name": "smoothness",
+          "source": "statmorph.smoothness",
+          "type": "continuous"
+        },
+        {
+          "name": "gini",
+          "source": "statmorph.gini",
+          "type": "continuous"
+        },
+        {
+          "name": "m20",
+          "source": "statmorph.m20",
+          "type": "continuous"
+        },
+        {
+          "clip": [
+            0.3,
+            10.0
+          ],
+          "name": "sersic_n",
+          "source": "statmorph.sersic_n",
+          "type": "continuous"
+        },
+        {
+          "name": "r_eff_pixels",
+          "source": "statmorph.rhalf_ellip",
+          "type": "continuous"
+        }
+      ],
+      "target": {
+        "name": "hubble_type",
+        "values": [
+          "E",
+          "S0",
+          "Sa",
+          "Sb",
+          "Sc",
+          "Sd",
+          "Irr"
+        ]
+      }
+    },
+    "model": {
+      "augment": {
+        "color_jitter": 0.1,
+        "flip": true,
+        "rotation": true
+      },
+      "backbone": {
+        "name": "convnext_nano",
+        "pretrained_source": "mwalmsley"
+      },
+      "heads": {
+        "categorical_loss": "cross_entropy",
+        "concept_weight_perceptual": 1.0,
+        "concept_weight_physical": 1.0,
+        "continuous_loss": "smooth_l1",
+        "ordinal_loss": "cross_entropy"
+      },
+      "logging": {
+        "run_dir": "models/stage1",
+        "save_top_k": 2,
+        "wandb_project": "galaxycbm-sr"
+      },
+      "seed": 20260101,
+      "train": {
+        "batch_size": 128,
+        "early_stopping_patience": 5,
+        "gradient_clip_val": 1.0,
+        "lr": 0.0003,
+        "max_epochs": 40,
+        "num_workers": 4,
+        "optimizer": "adamw",
+        "precision": "16-mixed",
+        "scheduler": "cosine",
+        "warmup_epochs": 2,
+        "weight_decay": 0.0001
+      }
+    }
+  },
+  "config_hash": "9b41f9839d3c0e1f56d2a7532eec500cde89305adc1a2f7b8ca1d492cefc2309",
+  "extra": {
+    "best_checkpoint": "/Users/ramc/Research_codes/galaxy_classification/GalaxyCBM-SR/models/stage1/cbm-epoch=11-val/loss=8.488.ckpt",
+    "fidelity_csv": "results/concepts/fidelity.csv",
+    "heads_passing_baseline": 15,
+    "heads_total": 17,
+    "n_test": 6075,
+    "n_train": 24299,
+    "n_val": 6075,
+    "preds_parquet": "results/concepts/preds.parquet",
+    "reliability_png": "results/concepts/reliability.png"
+  },
+  "galaxycbm_version": "0.0.1",
+  "git_dirty": true,
+  "git_sha": "fd2934aa04b691a94406eda858ca7339db62789b",
+  "packages": {
+    "astropy": "7.2.2",
+    "hydra-core": "1.3.4",
+    "juliacall": "0.9.26",
+    "mapie": "1.4.1",
+    "matplotlib": "3.11.0",
+    "numpy": "2.2.6",
+    "omegaconf": "2.3.1",
+    "pandas": "2.3.3",
+    "photutils": "2.3.0",
+    "pyarrow": "20.0.0",
+    "pysr": "1.5.10",
+    "scikit-image": "0.25.2",
+    "scikit-learn": "1.9.0",
+    "shap": "0.51.0",
+    "statmorph": "0.7.2",
+    "torch": "2.11.0",
+    "xgboost": "2.1.4",
+    "zoobot": "2.9.0"
+  },
+  "platform": "macOS-26.3.1-arm64-arm-64bit",
+  "python": "3.11.9",
+  "seed": 20260101,
+  "stage": "concepts"
+}

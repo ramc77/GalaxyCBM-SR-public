@@ -1,0 +1,40 @@
+# Stage-1 concept predictor (Zoobot fine-tune). Confirm the current Zoobot
+# fine-tuning API in P4 before wiring these in.
+
+backbone:
+  name: "convnext_nano"            # config-selectable; zoobot 2.9 ships convnext / efficientnet_v2 / maxvit
+  pretrained_source: "mwalmsley"   # HuggingFace org
+
+heads:
+  # One head per concept — categorical → BCE/CE on vote fractions,
+  # continuous → smooth L1 vs statmorph ground truth.
+  categorical_loss: "cross_entropy"
+  ordinal_loss: "cross_entropy"    # revisit in P4 (ordinal CE variant)
+  continuous_loss: "smooth_l1"
+  concept_weight_perceptual: 1.0
+  concept_weight_physical: 1.0
+
+train:
+  batch_size: 128
+  num_workers: 4
+  precision: "16-mixed"
+  optimizer: "adamw"
+  lr: 3.0e-4
+  weight_decay: 1.0e-4
+  scheduler: "cosine"
+  warmup_epochs: 2
+  max_epochs: 40
+  early_stopping_patience: 5
+  gradient_clip_val: 1.0
+
+augment:
+  rotation: true
+  flip: true
+  color_jitter: 0.1
+
+logging:
+  wandb_project: "galaxycbm-sr"
+  run_dir: "models/stage1"
+  save_top_k: 2
+
+seed: 20260101

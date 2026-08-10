@@ -1,0 +1,352 @@
+{
+  "config": {
+    "concepts": {
+      "perceptual": [
+        {
+          "name": "smooth-or-featured",
+          "source": "gz_task_smooth_or_featured",
+          "type": "categorical",
+          "values": [
+            "smooth",
+            "featured-or-disk",
+            "artifact"
+          ]
+        },
+        {
+          "name": "disk-edge-on",
+          "source": "gz_task_edge_on",
+          "type": "categorical",
+          "values": [
+            "yes",
+            "no"
+          ]
+        },
+        {
+          "name": "bar",
+          "source": "gz_task_bar",
+          "type": "categorical",
+          "values": [
+            "strong",
+            "weak",
+            "no"
+          ]
+        },
+        {
+          "name": "has-spiral-arms",
+          "source": "gz_task_spiral",
+          "type": "categorical",
+          "values": [
+            "yes",
+            "no"
+          ]
+        },
+        {
+          "name": "bulge-size",
+          "source": "gz_task_bulge",
+          "type": "ordinal",
+          "values": [
+            "dominant",
+            "large",
+            "moderate",
+            "small",
+            "none"
+          ]
+        },
+        {
+          "name": "how-rounded",
+          "source": "gz_task_rounded",
+          "type": "ordinal",
+          "values": [
+            "round",
+            "in-between",
+            "cigar-shaped"
+          ]
+        },
+        {
+          "name": "edge-on-bulge",
+          "source": "gz_task_edge_on_bulge",
+          "type": "categorical",
+          "values": [
+            "boxy",
+            "rounded",
+            "none"
+          ]
+        },
+        {
+          "name": "spiral-winding",
+          "source": "gz_task_arm_winding",
+          "type": "ordinal",
+          "values": [
+            "tight",
+            "medium",
+            "loose"
+          ]
+        },
+        {
+          "name": "spiral-arm-count",
+          "source": "gz_task_arm_count",
+          "type": "ordinal",
+          "values": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "more-than-4",
+            "cant-tell"
+          ]
+        },
+        {
+          "name": "merging",
+          "source": "gz_task_merger",
+          "type": "categorical",
+          "values": [
+            "none",
+            "minor-disturbance",
+            "major-disturbance",
+            "merger"
+          ]
+        }
+      ],
+      "physical": [
+        {
+          "name": "concentration",
+          "source": "statmorph.concentration",
+          "type": "continuous"
+        },
+        {
+          "name": "asymmetry",
+          "source": "statmorph.asymmetry",
+          "type": "continuous"
+        },
+        {
+          "name": "smoothness",
+          "source": "statmorph.smoothness",
+          "type": "continuous"
+        },
+        {
+          "name": "gini",
+          "source": "statmorph.gini",
+          "type": "continuous"
+        },
+        {
+          "name": "m20",
+          "source": "statmorph.m20",
+          "type": "continuous"
+        },
+        {
+          "clip": [
+            0.3,
+            10.0
+          ],
+          "name": "sersic_n",
+          "source": "statmorph.sersic_n",
+          "type": "continuous"
+        },
+        {
+          "name": "r_eff_pixels",
+          "source": "statmorph.rhalf_ellip",
+          "type": "continuous"
+        }
+      ],
+      "target": {
+        "name": "hubble_type",
+        "values": [
+          "E",
+          "S0",
+          "Sa",
+          "Sb",
+          "Sc",
+          "Sd",
+          "Irr"
+        ]
+      }
+    },
+    "conformal": {
+      "alpha": 0.1,
+      "calibration_split_fraction": 0.15,
+      "coverage_tolerance": "auto",
+      "method": "lac",
+      "per_class_report": true,
+      "seed": 20260101,
+      "selective": {
+        "abstain_when_set_size_ge": 2
+      }
+    },
+    "symbolic": {
+      "export": {
+        "latex_path": "results/symbolic/rules.tex",
+        "plain_path": "results/symbolic/rules.txt",
+        "python_path": "src/galaxycbm/symbolic/exported_rules.py"
+      },
+      "pysr": {
+        "binary_operators": [
+          "+",
+          "-",
+          "*",
+          "/"
+        ],
+        "constraints": {
+          "log": 5,
+          "sqrt": 5
+        },
+        "loss": "loss(x, y) = (x - y)^2",
+        "maxsize": 25,
+        "model_selection": "best",
+        "niterations": 100,
+        "parsimony": 0.0032,
+        "population_size": 33,
+        "populations": 30,
+        "turbo": true,
+        "unary_operators": [
+          "exp",
+          "log",
+          "square",
+          "sqrt",
+          "abs"
+        ]
+      },
+      "robustness_max_train_rows": 3000,
+      "seed": 20260101,
+      "training": {
+        "cv": {
+          "n_splits": 5,
+          "stratified": true
+        },
+        "formulation": "one_vs_rest",
+        "max_wall_seconds_per_class": 900
+      }
+    }
+  },
+  "config_hash": "99cb737cfe33f16fc7d4a69b6882e7aa20405c2c2047350e3bbca08461037fc5",
+  "extra": {
+    "findings_md": "results/robustness/findings.md",
+    "reference": {
+      "coverage": 0.9018930041152263,
+      "ece": 0.5114846465578992,
+      "metrics": {
+        "accuracy": 0.7871604938271605,
+        "cohen_kappa": 0.5709211666327354,
+        "confusion_matrix": [
+          [
+            3763,
+            55,
+            151,
+            0,
+            49,
+            33,
+            1
+          ],
+          [
+            170,
+            124,
+            20,
+            0,
+            21,
+            9,
+            0
+          ],
+          [
+            250,
+            12,
+            319,
+            1,
+            42,
+            16,
+            2
+          ],
+          [
+            5,
+            0,
+            2,
+            0,
+            4,
+            1,
+            0
+          ],
+          [
+            99,
+            4,
+            34,
+            1,
+            400,
+            97,
+            1
+          ],
+          [
+            68,
+            14,
+            23,
+            0,
+            84,
+            172,
+            2
+          ],
+          [
+            5,
+            0,
+            2,
+            0,
+            1,
+            14,
+            4
+          ]
+        ],
+        "labels": [
+          "E",
+          "Irr",
+          "S0",
+          "Sa",
+          "Sb",
+          "Sc",
+          "Sd"
+        ],
+        "macro_f1": 0.46211641313952734,
+        "n": 6075
+      },
+      "n_val": 6075
+    },
+    "shift_png": "results/robustness/shift.png",
+    "shift_table_csv": "results/tables/robustness.csv",
+    "surveys": [
+      {
+        "delta_accuracy": 0.051688293309987476,
+        "delta_coverage": 0.07395507048435856,
+        "delta_ece": 0.0826640138644874,
+        "delta_kappa": 0.17037261418265093,
+        "delta_macro_f1": 0.20413101979687442,
+        "n_ref": 6075,
+        "n_shift": 161395,
+        "rule_mean_jaccard": 0.41971243042671613,
+        "rule_top_k_overlap": 0.42857142857142855,
+        "survey": "euclid_q1"
+      }
+    ]
+  },
+  "galaxycbm_version": "0.0.1",
+  "git_dirty": true,
+  "git_sha": "fd2934aa04b691a94406eda858ca7339db62789b",
+  "packages": {
+    "astropy": "7.2.2",
+    "hydra-core": "1.3.4",
+    "juliacall": "0.9.26",
+    "mapie": "1.4.1",
+    "matplotlib": "3.11.0",
+    "numpy": "2.2.6",
+    "omegaconf": "2.3.1",
+    "pandas": "2.3.3",
+    "photutils": "2.3.0",
+    "pyarrow": "20.0.0",
+    "pysr": "1.5.10",
+    "scikit-image": "0.25.2",
+    "scikit-learn": "1.9.0",
+    "shap": "0.51.0",
+    "statmorph": "0.7.2",
+    "torch": "2.11.0",
+    "xgboost": "2.1.4",
+    "zoobot": "2.9.0"
+  },
+  "platform": "macOS-26.3.1-arm64-arm-64bit",
+  "python": "3.11.9",
+  "seed": 20260101,
+  "stage": "robustness"
+}

@@ -1,0 +1,8 @@
+{
+  "hubble_class": "Sb",
+  "equation_str": "((0.12820928 * sqrt(spiral_winding__tight * disk_edge_on__no)) + 0.012421057) * ((smooth_or_featured__featured_or_disk / (square(square(bulge_size__large) + (merging__merger + square(has_spiral_arms__no))) + 0.13946718)) * disk_edge_on__no)",
+  "latex": "\\frac{disk^{no}_{edge on} smooth^{featured}_{or featured or disk} \\left(0.12820928 \\sqrt{disk^{no}_{edge on} spiral^{tight}_{winding}} + 0.012421057\\right)}{\\left(\\left(bulge^{large}_{size}\\right)^{2} + \\left(has^{no}_{spiral arms}\\right)^{2} + merging^{merger}\\right)^{2} + 0.13946718}",
+  "complexity": 23,
+  "pysr_score": 0.0005457596129564198,
+  "cv_accuracy": 0.9636198831746613
+}

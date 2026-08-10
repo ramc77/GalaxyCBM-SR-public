@@ -1,0 +1,8 @@
+{
+  "hubble_class": "Sd",
+  "equation_str": "square((((spiral_arm_count__2 * exp(edge_on_bulge__none)) / ((bulge_size__moderate + -0.4221074) + spiral_winding__tight)) * -0.002711116) / (bulge_size__moderate + -0.30507272)) * (spiral_winding__loose * (exp(edge_on_bulge__none) - has_spiral_arms__no))",
+  "latex": "spiral^{loose}_{winding} \\frac{7.350149965456 \\cdot 10^{-6} \\left(spiral^{2}_{arm count}\\right)^{2} e^{2 edge^{none}_{on bulge}}}{\\left(bulge^{moderate}_{size} - 0.30507272\\right)^{2} \\left(bulge^{moderate}_{size} + spiral^{tight}_{winding} - 0.4221074\\right)^{2}} \\left(- has^{no}_{spiral arms} + e^{edge^{none}_{on bulge}}\\right)",
+  "complexity": 24,
+  "pysr_score": 0.053890282911030936,
+  "cv_accuracy": 0.9996666666666666
+}

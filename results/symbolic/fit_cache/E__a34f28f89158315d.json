@@ -1,0 +1,8 @@
+{
+  "hubble_class": "E",
+  "equation_str": "smooth_or_featured__smooth * ((1.0040188 - merging__merger) - ((how_rounded__cigar_shaped - (((smooth_or_featured__featured_or_disk + -0.52061987) - smoothness) - smoothness)) * (smooth_or_featured__featured_or_disk * -0.6904113)))",
+  "latex": "smooth^{smooth}_{or featured} \\left(- merging^{merger} - \\left(how^{cigar}_{rounded shaped} - \\left(smooth^{featured}_{or featured or disk} - smoothness - smoothness - 0.52061987\\right)\\right) smooth^{featured}_{or featured or disk} \\left(-0.6904113\\right) + 1.0040188\\right)",
+  "complexity": 19,
+  "pysr_score": 0.0007656112591069893,
+  "cv_accuracy": 0.9012717141920682
+}

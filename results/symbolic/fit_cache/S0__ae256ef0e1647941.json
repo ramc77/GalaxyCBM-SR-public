@@ -1,0 +1,8 @@
+{
+  "hubble_class": "S0",
+  "equation_str": "(smooth_or_featured__featured_or_disk * (((has_spiral_arms__no / exp(how_rounded__cigar_shaped)) + ((((how_rounded__cigar_shaped + 0.08217391) * how_rounded__cigar_shaped) * 0.53461885) * smooth_or_featured__featured_or_disk)) * (1.2183967 - merging__merger))) + -0.008181877",
+  "latex": "smooth^{featured}_{or featured or disk} \\left(1.2183967 - merging^{merger}\\right) \\left(\\frac{has^{no}_{spiral arms}}{e^{how^{cigar}_{rounded shaped}}} + \\left(how^{cigar}_{rounded shaped} + 0.08217391\\right) how^{cigar}_{rounded shaped} 0.53461885 smooth^{featured}_{or featured or disk}\\right) - 0.008181877",
+  "complexity": 22,
+  "pysr_score": 0.0008668236593379514,
+  "cv_accuracy": 0.9410262912062551
+}

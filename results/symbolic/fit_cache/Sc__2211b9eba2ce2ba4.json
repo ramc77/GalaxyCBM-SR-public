@@ -1,0 +1,8 @@
+{
+  "hubble_class": "Sc",
+  "equation_str": "((disk_edge_on__no * (smooth_or_featured__featured_or_disk / exp(bulge_size__none + square(smooth_or_featured__smooth)))) / exp(square((square(spiral_winding__tight) + square(square(has_spiral_arms__no))) * 5.934237))) / square(exp(square(bulge_size__large)))",
+  "latex": "\\frac{disk^{no}_{edge on} smooth^{featured}_{or featured or disk}}{e^{2 \\left(bulge^{large}_{size}\\right)^{2}} e^{bulge^{none}_{size} + \\left(smooth^{smooth}_{or featured}\\right)^{2}} e^{35.215168772169 \\left(\\left(has^{no}_{spiral arms}\\right)^{4} + \\left(spiral^{tight}_{winding}\\right)^{2}\\right)^{2}}}",
+  "complexity": 25,
+  "pysr_score": 0.006962572326404735,
+  "cv_accuracy": 0.9633333333333335
+}
