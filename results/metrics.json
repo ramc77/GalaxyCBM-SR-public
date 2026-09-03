@@ -1,6 +1,6 @@
 {
-  "generated_from": "/Users/ramc/Research_codes/galaxy_classification/GalaxyCBM-SR/results",
-  "git_sha": "861ff1125a7b820b8b8fc75008df32b779a51951",
+  "generated_from": "/Users/ramchand/GalaxyCBM-SR/results",
+  "git_sha": "5c6a8d8d3e40ac6b9deb0e082546875d2699a70f",
   "stages": {
     "baselines": {
       "fidelity": [
@@ -490,7 +490,7 @@
           "metric": "RMSE",
           "n": 6075,
           "note": NaN,
-          "value": 7.1108089532515955
+          "value": 7.110808953251596
         }
       ],
       "name": "concepts",
@@ -953,6 +953,1037 @@
         "python": "3.11.9",
         "seed": 20260101,
         "stage": "data.labels"
+      }
+    },
+    "revision": {
+      "compact": {
+        "adopted": {
+          "test": {
+            "accuracy": 0.7761316872427984,
+            "cohen_kappa": 0.5495404134545114,
+            "confusion_matrix": [
+              [
+                3732,
+                81,
+                155,
+                0,
+                56,
+                28,
+                0
+              ],
+              [
+                187,
+                96,
+                24,
+                0,
+                19,
+                18,
+                0
+              ],
+              [
+                254,
+                10,
+                312,
+                0,
+                44,
+                22,
+                1
+              ],
+              [
+                4,
+                0,
+                2,
+                0,
+                6,
+                0,
+                0
+              ],
+              [
+                97,
+                5,
+                35,
+                1,
+                408,
+                88,
+                2
+              ],
+              [
+                68,
+                7,
+                21,
+                0,
+                98,
+                165,
+                3
+              ],
+              [
+                6,
+                1,
+                2,
+                0,
+                0,
+                15,
+                2
+              ]
+            ],
+            "labels": [
+              "E",
+              "Irr",
+              "S0",
+              "Sa",
+              "Sb",
+              "Sc",
+              "Sd"
+            ],
+            "macro_f1": 0.4283704486643977,
+            "n": 6075,
+            "total_nodes": 153
+          },
+          "validation": {
+            "accuracy": 0.7871604938271605,
+            "cohen_kappa": 0.5709211666327354,
+            "confusion_matrix": [
+              [
+                3763,
+                55,
+                151,
+                0,
+                49,
+                33,
+                1
+              ],
+              [
+                170,
+                124,
+                20,
+                0,
+                21,
+                9,
+                0
+              ],
+              [
+                250,
+                12,
+                319,
+                1,
+                42,
+                16,
+                2
+              ],
+              [
+                5,
+                0,
+                2,
+                0,
+                4,
+                1,
+                0
+              ],
+              [
+                99,
+                4,
+                34,
+                1,
+                400,
+                97,
+                1
+              ],
+              [
+                68,
+                14,
+                23,
+                0,
+                84,
+                172,
+                2
+              ],
+              [
+                5,
+                0,
+                2,
+                0,
+                1,
+                14,
+                4
+              ]
+            ],
+            "labels": [
+              "E",
+              "Irr",
+              "S0",
+              "Sa",
+              "Sb",
+              "Sc",
+              "Sd"
+            ],
+            "macro_f1": 0.46211641313952734,
+            "n": 6075,
+            "total_nodes": 153
+          }
+        },
+        "classes_with_front": [
+          "E",
+          "Irr",
+          "S0",
+          "Sa",
+          "Sb",
+          "Sc",
+          "Sd"
+        ],
+        "classes_without_front": [],
+        "compact": {
+          "test": {
+            "accuracy": 0.7756378600823045,
+            "cohen_kappa": 0.5494727260212966,
+            "confusion_matrix": [
+              [
+                3725,
+                78,
+                164,
+                0,
+                58,
+                27,
+                0
+              ],
+              [
+                192,
+                90,
+                23,
+                0,
+                17,
+                22,
+                0
+              ],
+              [
+                239,
+                13,
+                318,
+                0,
+                47,
+                26,
+                0
+              ],
+              [
+                6,
+                0,
+                2,
+                0,
+                4,
+                0,
+                0
+              ],
+              [
+                100,
+                3,
+                34,
+                0,
+                408,
+                91,
+                0
+              ],
+              [
+                69,
+                5,
+                19,
+                0,
+                98,
+                171,
+                0
+              ],
+              [
+                5,
+                1,
+                2,
+                0,
+                0,
+                18,
+                0
+              ]
+            ],
+            "labels": [
+              "E",
+              "Irr",
+              "S0",
+              "Sa",
+              "Sb",
+              "Sc",
+              "Sd"
+            ],
+            "macro_f1": 0.4105105190849538,
+            "n": 6075,
+            "total_nodes": 31
+          },
+          "validation": {
+            "accuracy": 0.7805761316872428,
+            "cohen_kappa": 0.5591882986504686,
+            "confusion_matrix": [
+              [
+                3743,
+                54,
+                174,
+                0,
+                47,
+                34,
+                0
+              ],
+              [
+                173,
+                113,
+                18,
+                0,
+                22,
+                18,
+                0
+              ],
+              [
+                238,
+                16,
+                313,
+                0,
+                48,
+                27,
+                0
+              ],
+              [
+                5,
+                0,
+                1,
+                0,
+                6,
+                0,
+                0
+              ],
+              [
+                106,
+                4,
+                34,
+                0,
+                399,
+                93,
+                0
+              ],
+              [
+                70,
+                12,
+                19,
+                0,
+                88,
+                174,
+                0
+              ],
+              [
+                5,
+                0,
+                2,
+                0,
+                1,
+                18,
+                0
+              ]
+            ],
+            "labels": [
+              "E",
+              "Irr",
+              "S0",
+              "Sa",
+              "Sb",
+              "Sc",
+              "Sd"
+            ],
+            "macro_f1": 0.4210324861103448,
+            "n": 6075,
+            "total_nodes": 31
+          }
+        },
+        "delta_test": {
+          "accuracy": -0.0004938271604938427,
+          "cohen_kappa": -6.768743321483583e-05,
+          "macro_f1": -0.017859929579443934
+        },
+        "delta_validation": {
+          "accuracy": -0.006584362139917643,
+          "cohen_kappa": -0.011732867982266804,
+          "macro_f1": -0.041083927029182565
+        },
+        "node_reduction": 122,
+        "tau": 0.005
+      },
+      "compact_rules": [
+        {
+          "adopted_complexity": 19,
+          "adopted_cv_accuracy": 0.9012717141920682,
+          "class": "E",
+          "compact_complexity": 4,
+          "compact_cv_accuracy": 0.8988848405699151,
+          "compact_equation": "smooth_or_featured__smooth / exp(merging__merger)",
+          "front_available": true
+        },
+        {
+          "adopted_complexity": 25,
+          "adopted_cv_accuracy": 0.9638255767372412,
+          "class": "Irr",
+          "compact_complexity": 1,
+          "compact_cv_accuracy": 0.9620559447192728,
+          "compact_equation": "merging__merger",
+          "front_available": true
+        },
+        {
+          "adopted_complexity": 22,
+          "adopted_cv_accuracy": 0.9410262912062552,
+          "class": "S0",
+          "compact_complexity": 7,
+          "compact_cv_accuracy": 0.936293670817464,
+          "compact_equation": "has_spiral_arms__no * ((1.1013545 - merging__merger) * smooth_or_featured__featured_or_disk)",
+          "front_available": true
+        },
+        {
+          "adopted_complexity": 22,
+          "adopted_cv_accuracy": 0.9983127063859268,
+          "class": "Sa",
+          "compact_complexity": 1,
+          "compact_cv_accuracy": 0.9979834628710712,
+          "compact_equation": "0.0020331505",
+          "front_available": true
+        },
+        {
+          "adopted_complexity": 23,
+          "adopted_cv_accuracy": 0.9636198831746612,
+          "class": "Sb",
+          "compact_complexity": 8,
+          "compact_cv_accuracy": 0.9590106518217012,
+          "compact_equation": "(sqrt(spiral_winding__tight) * (0.9591392 - has_spiral_arms__no)) * smooth_or_featured__featured_or_disk",
+          "front_available": true
+        },
+        {
+          "adopted_complexity": 25,
+          "adopted_cv_accuracy": 0.9696695538464536,
+          "class": "Sc",
+          "compact_complexity": 9,
+          "compact_cv_accuracy": 0.9651015425111604,
+          "compact_equation": "square(((0.8866031 - spiral_winding__tight) * smooth_or_featured__featured_or_disk) / exp(has_spiral_arms__no))",
+          "front_available": true
+        },
+        {
+          "adopted_complexity": 17,
+          "adopted_cv_accuracy": 0.9966665480966548,
+          "class": "Sd",
+          "compact_complexity": 1,
+          "compact_cv_accuracy": 0.9957199952233224,
+          "compact_equation": "0.004280062",
+          "front_available": true
+        }
+      ],
+      "mondrian_per_class": [
+        {
+          "class": "E",
+          "degenerate": false,
+          "marginal_coverage": 0.9817374136229022,
+          "marginal_mean_set_size": 1.2788746298124385,
+          "mondrian_coverage": 0.8938795656465943,
+          "mondrian_mean_set_size": 3.6251233958538993,
+          "n": 4052,
+          "n_calibration": 2701,
+          "quantile": 0.785669565187121
+        },
+        {
+          "class": "Irr",
+          "degenerate": false,
+          "marginal_coverage": 0.4505813953488372,
+          "marginal_mean_set_size": 1.7296511627906976,
+          "mondrian_coverage": 0.9098837209302324,
+          "mondrian_mean_set_size": 4.151162790697675,
+          "n": 344,
+          "n_calibration": 229,
+          "quantile": 0.883537371412818
+        },
+        {
+          "class": "S0",
+          "degenerate": false,
+          "marginal_coverage": 0.7278382581648523,
+          "marginal_mean_set_size": 1.7620528771384136,
+          "mondrian_coverage": 0.8895800933125972,
+          "mondrian_mean_set_size": 4.637636080870918,
+          "n": 643,
+          "n_calibration": 428,
+          "quantile": 0.8786431650558117
+        },
+        {
+          "class": "Sa",
+          "degenerate": true,
+          "marginal_coverage": 0.0833333333333333,
+          "marginal_mean_set_size": 2.083333333333333,
+          "mondrian_coverage": 1.0,
+          "mondrian_mean_set_size": 5.583333333333333,
+          "n": 12,
+          "n_calibration": 8,
+          "quantile": Infinity
+        },
+        {
+          "class": "Sb",
+          "degenerate": false,
+          "marginal_coverage": 0.8632075471698113,
+          "marginal_mean_set_size": 1.6918238993710693,
+          "mondrian_coverage": 0.8962264150943396,
+          "mondrian_mean_set_size": 4.339622641509434,
+          "n": 636,
+          "n_calibration": 424,
+          "quantile": 0.8712178545081034
+        },
+        {
+          "class": "Sc",
+          "degenerate": false,
+          "marginal_coverage": 0.6574585635359116,
+          "marginal_mean_set_size": 2.160220994475138,
+          "mondrian_coverage": 0.9171270718232044,
+          "mondrian_mean_set_size": 5.176795580110498,
+          "n": 362,
+          "n_calibration": 242,
+          "quantile": 0.883335958433888
+        },
+        {
+          "class": "Sd",
+          "degenerate": false,
+          "marginal_coverage": 0.4615384615384615,
+          "marginal_mean_set_size": 2.3076923076923075,
+          "mondrian_coverage": 0.8846153846153846,
+          "mondrian_mean_set_size": 5.0,
+          "n": 26,
+          "n_calibration": 17,
+          "quantile": 0.8831280865759142
+        }
+      ],
+      "mondrian_summary": {
+        "alpha": 0.1,
+        "class_calibration_counts": {
+          "E": 2701,
+          "Irr": 229,
+          "S0": 428,
+          "Sa": 8,
+          "Sb": 424,
+          "Sc": 242,
+          "Sd": 17
+        },
+        "degenerate_classes": [
+          "Sa"
+        ],
+        "marginal": {
+          "alpha": 0.1,
+          "classes": [
+            "E",
+            "Irr",
+            "S0",
+            "Sa",
+            "Sb",
+            "Sc",
+            "Sd"
+          ],
+          "coverage_gap": -0.010946502057613161,
+          "empirical_coverage": 0.8890534979423869,
+          "empty_fraction": 0.0,
+          "mean_set_size": 1.4572839506172839,
+          "median_set_size": 1.0,
+          "method": "lac",
+          "n": 6075,
+          "nominal_coverage": 0.9,
+          "singleton_fraction": 0.6594238683127572
+        },
+        "min_calibration_points_for_validity": 9,
+        "mondrian": {
+          "alpha": 0.1,
+          "classes": [
+            "E",
+            "Irr",
+            "S0",
+            "Sa",
+            "Sb",
+            "Sc",
+            "Sd"
+          ],
+          "coverage_gap": -0.003868312757201675,
+          "degenerate_classes": [
+            "Sa"
+          ],
+          "empirical_coverage": 0.8961316872427983,
+          "empty_fraction": 0.0,
+          "mean_set_size": 3.939094650205761,
+          "median_set_size": 3.0,
+          "method": "mondrian-lac",
+          "min_calibration_points": 9,
+          "n": 6075,
+          "nominal_coverage": 0.9,
+          "singleton_fraction": 0.0
+        },
+        "n_calibration": 4049,
+        "n_test": 6075,
+        "set_size_cost": 2.481810699588477,
+        "worst_class_coverage_marginal": 0.08333333333333333,
+        "worst_class_coverage_mondrian": 0.8846153846153846
+      },
+      "name": "revision",
+      "run_json": {
+        "config": {
+          "conformal": {
+            "alpha": 0.1,
+            "calibration_split_fraction": 0.15,
+            "coverage_tolerance": "auto",
+            "method": "lac",
+            "per_class_report": true,
+            "seed": 20260101,
+            "selective": {
+              "abstain_when_set_size_ge": 2
+            }
+          },
+          "tau": 0.005
+        },
+        "config_hash": "e75d709610ac9c54accb8b3aeee9374d4908aee4504d8e81a3f4718b8f3ec50b",
+        "extra": {
+          "compact": {
+            "adopted": {
+              "test": {
+                "accuracy": 0.7761316872427984,
+                "cohen_kappa": 0.5495404134545114,
+                "confusion_matrix": [
+                  [
+                    3732,
+                    81,
+                    155,
+                    0,
+                    56,
+                    28,
+                    0
+                  ],
+                  [
+                    187,
+                    96,
+                    24,
+                    0,
+                    19,
+                    18,
+                    0
+                  ],
+                  [
+                    254,
+                    10,
+                    312,
+                    0,
+                    44,
+                    22,
+                    1
+                  ],
+                  [
+                    4,
+                    0,
+                    2,
+                    0,
+                    6,
+                    0,
+                    0
+                  ],
+                  [
+                    97,
+                    5,
+                    35,
+                    1,
+                    408,
+                    88,
+                    2
+                  ],
+                  [
+                    68,
+                    7,
+                    21,
+                    0,
+                    98,
+                    165,
+                    3
+                  ],
+                  [
+                    6,
+                    1,
+                    2,
+                    0,
+                    0,
+                    15,
+                    2
+                  ]
+                ],
+                "labels": [
+                  "E",
+                  "Irr",
+                  "S0",
+                  "Sa",
+                  "Sb",
+                  "Sc",
+                  "Sd"
+                ],
+                "macro_f1": 0.4283704486643977,
+                "n": 6075,
+                "total_nodes": 153
+              },
+              "validation": {
+                "accuracy": 0.7871604938271605,
+                "cohen_kappa": 0.5709211666327354,
+                "confusion_matrix": [
+                  [
+                    3763,
+                    55,
+                    151,
+                    0,
+                    49,
+                    33,
+                    1
+                  ],
+                  [
+                    170,
+                    124,
+                    20,
+                    0,
+                    21,
+                    9,
+                    0
+                  ],
+                  [
+                    250,
+                    12,
+                    319,
+                    1,
+                    42,
+                    16,
+                    2
+                  ],
+                  [
+                    5,
+                    0,
+                    2,
+                    0,
+                    4,
+                    1,
+                    0
+                  ],
+                  [
+                    99,
+                    4,
+                    34,
+                    1,
+                    400,
+                    97,
+                    1
+                  ],
+                  [
+                    68,
+                    14,
+                    23,
+                    0,
+                    84,
+                    172,
+                    2
+                  ],
+                  [
+                    5,
+                    0,
+                    2,
+                    0,
+                    1,
+                    14,
+                    4
+                  ]
+                ],
+                "labels": [
+                  "E",
+                  "Irr",
+                  "S0",
+                  "Sa",
+                  "Sb",
+                  "Sc",
+                  "Sd"
+                ],
+                "macro_f1": 0.46211641313952734,
+                "n": 6075,
+                "total_nodes": 153
+              }
+            },
+            "classes_with_front": [
+              "E",
+              "Irr",
+              "S0",
+              "Sa",
+              "Sb",
+              "Sc",
+              "Sd"
+            ],
+            "classes_without_front": [],
+            "compact": {
+              "test": {
+                "accuracy": 0.7756378600823045,
+                "cohen_kappa": 0.5494727260212966,
+                "confusion_matrix": [
+                  [
+                    3725,
+                    78,
+                    164,
+                    0,
+                    58,
+                    27,
+                    0
+                  ],
+                  [
+                    192,
+                    90,
+                    23,
+                    0,
+                    17,
+                    22,
+                    0
+                  ],
+                  [
+                    239,
+                    13,
+                    318,
+                    0,
+                    47,
+                    26,
+                    0
+                  ],
+                  [
+                    6,
+                    0,
+                    2,
+                    0,
+                    4,
+                    0,
+                    0
+                  ],
+                  [
+                    100,
+                    3,
+                    34,
+                    0,
+                    408,
+                    91,
+                    0
+                  ],
+                  [
+                    69,
+                    5,
+                    19,
+                    0,
+                    98,
+                    171,
+                    0
+                  ],
+                  [
+                    5,
+                    1,
+                    2,
+                    0,
+                    0,
+                    18,
+                    0
+                  ]
+                ],
+                "labels": [
+                  "E",
+                  "Irr",
+                  "S0",
+                  "Sa",
+                  "Sb",
+                  "Sc",
+                  "Sd"
+                ],
+                "macro_f1": 0.4105105190849538,
+                "n": 6075,
+                "total_nodes": 31
+              },
+              "validation": {
+                "accuracy": 0.7805761316872428,
+                "cohen_kappa": 0.5591882986504686,
+                "confusion_matrix": [
+                  [
+                    3743,
+                    54,
+                    174,
+                    0,
+                    47,
+                    34,
+                    0
+                  ],
+                  [
+                    173,
+                    113,
+                    18,
+                    0,
+                    22,
+                    18,
+                    0
+                  ],
+                  [
+                    238,
+                    16,
+                    313,
+                    0,
+                    48,
+                    27,
+                    0
+                  ],
+                  [
+                    5,
+                    0,
+                    1,
+                    0,
+                    6,
+                    0,
+                    0
+                  ],
+                  [
+                    106,
+                    4,
+                    34,
+                    0,
+                    399,
+                    93,
+                    0
+                  ],
+                  [
+                    70,
+                    12,
+                    19,
+                    0,
+                    88,
+                    174,
+                    0
+                  ],
+                  [
+                    5,
+                    0,
+                    2,
+                    0,
+                    1,
+                    18,
+                    0
+                  ]
+                ],
+                "labels": [
+                  "E",
+                  "Irr",
+                  "S0",
+                  "Sa",
+                  "Sb",
+                  "Sc",
+                  "Sd"
+                ],
+                "macro_f1": 0.4210324861103448,
+                "n": 6075,
+                "total_nodes": 31
+              }
+            },
+            "delta_test": {
+              "accuracy": -0.0004938271604938427,
+              "cohen_kappa": -6.768743321483583e-05,
+              "macro_f1": -0.017859929579443934
+            },
+            "delta_validation": {
+              "accuracy": -0.006584362139917643,
+              "cohen_kappa": -0.011732867982266804,
+              "macro_f1": -0.041083927029182565
+            },
+            "node_reduction": 122,
+            "tau": 0.005
+          },
+          "mondrian": {
+            "alpha": 0.1,
+            "class_calibration_counts": {
+              "E": 2701,
+              "Irr": 229,
+              "S0": 428,
+              "Sa": 8,
+              "Sb": 424,
+              "Sc": 242,
+              "Sd": 17
+            },
+            "degenerate_classes": [
+              "Sa"
+            ],
+            "marginal": {
+              "alpha": 0.1,
+              "classes": [
+                "E",
+                "Irr",
+                "S0",
+                "Sa",
+                "Sb",
+                "Sc",
+                "Sd"
+              ],
+              "coverage_gap": -0.010946502057613161,
+              "empirical_coverage": 0.8890534979423869,
+              "empty_fraction": 0.0,
+              "mean_set_size": 1.4572839506172839,
+              "median_set_size": 1.0,
+              "method": "lac",
+              "n": 6075,
+              "nominal_coverage": 0.9,
+              "singleton_fraction": 0.6594238683127572
+            },
+            "min_calibration_points_for_validity": 9,
+            "mondrian": {
+              "alpha": 0.1,
+              "classes": [
+                "E",
+                "Irr",
+                "S0",
+                "Sa",
+                "Sb",
+                "Sc",
+                "Sd"
+              ],
+              "coverage_gap": -0.003868312757201675,
+              "degenerate_classes": [
+                "Sa"
+              ],
+              "empirical_coverage": 0.8961316872427983,
+              "empty_fraction": 0.0,
+              "mean_set_size": 3.939094650205761,
+              "median_set_size": 3.0,
+              "method": "mondrian-lac",
+              "min_calibration_points": 9,
+              "n": 6075,
+              "nominal_coverage": 0.9,
+              "singleton_fraction": 0.0
+            },
+            "n_calibration": 4049,
+            "n_test": 6075,
+            "set_size_cost": 2.481810699588477,
+            "worst_class_coverage_marginal": 0.08333333333333333,
+            "worst_class_coverage_mondrian": 0.8846153846153846
+          }
+        },
+        "galaxycbm_version": "0.0.1",
+        "git_dirty": true,
+        "git_sha": "b2f5d997f0276b89d0e5f108f81123c6185de6e9",
+        "packages": {
+          "astropy": "7.2.2",
+          "hydra-core": "1.3.4",
+          "juliacall": "0.9.26",
+          "mapie": "1.4.1",
+          "matplotlib": "3.11.0",
+          "numpy": "2.2.6",
+          "omegaconf": "2.3.1",
+          "pandas": "2.3.3",
+          "photutils": "2.3.0",
+          "pyarrow": "20.0.0",
+          "pysr": "1.5.10",
+          "scikit-image": "0.25.2",
+          "scikit-learn": "1.9.0",
+          "shap": "0.51.0",
+          "statmorph": "0.7.2",
+          "torch": "2.11.0",
+          "xgboost": "2.1.4",
+          "zoobot": "2.9.0"
+        },
+        "platform": "macOS-26.3.1-arm64-arm-64bit",
+        "python": "3.11.9",
+        "seed": 20260101,
+        "stage": "revision"
       }
     },
     "robustness": {
@@ -1985,7 +3016,7 @@
         {
           "class": "Sa",
           "coverage": 0.0833333333333333,
-          "mean_set_size": 2.0833333333333335,
+          "mean_set_size": 2.083333333333333,
           "n": 12
         },
         {

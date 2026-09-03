@@ -1,0 +1,8 @@
+class,adopted_complexity,adopted_cv_accuracy,compact_complexity,compact_cv_accuracy,compact_equation,front_available
+E,19,0.9012717141920682,4,0.8988848405699151,smooth_or_featured__smooth / exp(merging__merger),True
+Irr,25,0.9638255767372412,1,0.9620559447192729,merging__merger,True
+S0,22,0.9410262912062552,7,0.9362936708174641,has_spiral_arms__no * ((1.1013545 - merging__merger) * smooth_or_featured__featured_or_disk),True
+Sa,22,0.9983127063859268,1,0.9979834628710712,0.0020331505,True
+Sb,23,0.9636198831746612,8,0.9590106518217011,(sqrt(spiral_winding__tight) * (0.9591392 - has_spiral_arms__no)) * smooth_or_featured__featured_or_disk,True
+Sc,25,0.9696695538464536,9,0.9651015425111604,square(((0.8866031 - spiral_winding__tight) * smooth_or_featured__featured_or_disk) / exp(has_spiral_arms__no)),True
+Sd,17,0.9966665480966548,1,0.9957199952233223,0.004280062,True

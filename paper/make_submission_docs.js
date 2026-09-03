@@ -18,7 +18,7 @@ const highlightBullets = [
   'First concept bottleneck model for galaxy morphology classification',
   'The concept bottleneck costs 0.030 in kappa; the symbolic head adds no further cost',
   'A 153-node analytic rule set replaces a 15M-parameter network and is printed in full',
-  'Conformal coverage is 0.889 overall but only 0.08 for the rarest class',
+  'Per-class coverage spans 0.98 to 0.08; the fix triples prediction-set size',
   'Accuracy transfers to Euclid Q1 but the symbolic explanations do not (J = 0.42)',
 ];
 highlightBullets.forEach((b) => {
@@ -84,15 +84,24 @@ const coverLetter = new Document({
         + 'but they reason in representations with no physical referent, and the post-hoc '
         + 'attribution methods used to explain them describe a surrogate rather than the '
         + 'deployed decision. This manuscript takes the alternative route: it constrains '
-        + 'the model to be interpretable by construction. We present the first Concept '
+        + 'the model to be interpretable by construction. I present the first Concept '
         + 'Bottleneck Model for galaxy morphology, in which a Zoobot ConvNeXt backbone '
         + 'predicts seventeen physically named concepts (ten Galaxy Zoo decision-tree '
-        + 'tasks and seven statmorph structural statistics), and we replace the usual '
+        + 'tasks and seven statmorph structural statistics), and I replace the usual '
         + 'dense linear head with a compact analytic rule set discovered by symbolic '
         + 'regression. The deployed classifier is seven equations totalling 153 operator '
         + 'nodes, printed in full in the paper.'),
 
-      P('On 40,498 Galaxy Zoo Evo galaxies we measure what this interpretability costs '
+      P('The sample is built from twelve Galaxy Zoo Evo shards: 265,692 objects '
+        + 'processed, 137,876 surviving the statmorph quality cuts, and 40,498 retained '
+        + 'after Hubble-type derivation at a 0.5 clean-sample vote threshold. That '
+        + 'threshold discards 70.6% of the objects reaching it and biases the surviving '
+        + 'sample toward morphologically unambiguous systems, so absolute accuracies here '
+        + 'are not directly comparable with magnitude-limited studies. All methods are '
+        + 'therefore compared on identical splits rather than against literature values, '
+        + 'and the manuscript states this explicitly.'),
+
+      P('On 40,498 Galaxy Zoo Evo galaxies I measure what this interpretability costs '
         + 'rather than asserting it is free. An unconstrained ConvNeXt reaches a Cohen '
         + 'kappa of 0.601 against the symbolic head 0.571, so the concept bottleneck gives '
         + 'up 0.030. The symbolic head, a dense linear head and gradient-boosted trees over '

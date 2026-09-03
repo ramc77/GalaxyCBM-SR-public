@@ -1,0 +1,67 @@
+{
+  "alpha": 0.1,
+  "class_calibration_counts": {
+    "E": 2701,
+    "Irr": 229,
+    "S0": 428,
+    "Sa": 8,
+    "Sb": 424,
+    "Sc": 242,
+    "Sd": 17
+  },
+  "degenerate_classes": [
+    "Sa"
+  ],
+  "marginal": {
+    "alpha": 0.1,
+    "classes": [
+      "E",
+      "Irr",
+      "S0",
+      "Sa",
+      "Sb",
+      "Sc",
+      "Sd"
+    ],
+    "coverage_gap": -0.010946502057613161,
+    "empirical_coverage": 0.8890534979423869,
+    "empty_fraction": 0.0,
+    "mean_set_size": 1.4572839506172839,
+    "median_set_size": 1.0,
+    "method": "lac",
+    "n": 6075,
+    "nominal_coverage": 0.9,
+    "singleton_fraction": 0.6594238683127572
+  },
+  "min_calibration_points_for_validity": 9,
+  "mondrian": {
+    "alpha": 0.1,
+    "classes": [
+      "E",
+      "Irr",
+      "S0",
+      "Sa",
+      "Sb",
+      "Sc",
+      "Sd"
+    ],
+    "coverage_gap": -0.003868312757201675,
+    "degenerate_classes": [
+      "Sa"
+    ],
+    "empirical_coverage": 0.8961316872427983,
+    "empty_fraction": 0.0,
+    "mean_set_size": 3.939094650205761,
+    "median_set_size": 3.0,
+    "method": "mondrian-lac",
+    "min_calibration_points": 9,
+    "n": 6075,
+    "nominal_coverage": 0.9,
+    "singleton_fraction": 0.0
+  },
+  "n_calibration": 4049,
+  "n_test": 6075,
+  "set_size_cost": 2.481810699588477,
+  "worst_class_coverage_marginal": 0.08333333333333333,
+  "worst_class_coverage_mondrian": 0.8846153846153846
+}

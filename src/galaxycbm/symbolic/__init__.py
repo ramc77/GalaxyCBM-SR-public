@@ -26,6 +26,11 @@ from galaxycbm.symbolic.fit import (
     fit_symbolic,
     rules_dataframe,
 )
+from galaxycbm.symbolic.parsimony import (
+    evaluate_rule_set,
+    load_fronts,
+    select_compact_rules,
+)
 
 __all__ = [
     "ClassRule",
@@ -34,13 +39,16 @@ __all__ = [
     "build_features",
     "compute_metrics",
     "evaluate_expression",
+    "evaluate_rule_set",
     "export_callable",
     "export_latex",
     "export_plain",
     "fit_symbolic",
+    "load_fronts",
     "pareto_figure",
     "predict_labels",
     "rules_dataframe",
     "safe_feature_name",
+    "select_compact_rules",
     "score_expressions",
 ]

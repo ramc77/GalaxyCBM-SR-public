@@ -1,15 +1,5 @@
 %=======================================================================
-%  GalaxyCBM-SR
-%  Glass-box galaxy morphology: symbolic concept bottlenecks
-%
-%  JOURNAL-NEUTRAL MANUSCRIPT FORMAT
-%  Single-column, 11pt, generous margins, 1.5 line spacing.
-%  Most journals (MNRAS, A&A, ApJ, MLST, Sci Rep, A&C) accept this for
-%  initial submission under "your paper, your way" policies. Convert to a
-%  house class only if the journal requests it after review.
-%
-%  Compile:  pdflatex main && pdflatex main && pdflatex main
-%  Figures expected in paper/figures/ (regenerate with `make eval`)
+% 
 %=======================================================================
 \documentclass[11pt]{article}
 
@@ -37,6 +27,10 @@
 
 \newcommand{\kappastat}{\ensuremath{\kappa}}
 \newcommand{\code}[1]{\texttt{\small #1}}
+
+% Marks a number still awaiting its run. No occurrences should survive into
+% a compiled draft; any that do are a bug, not a value.
+\newcommand{\pending}[1]{\textcolor{red}{\textbf{[PENDING: #1]}}}
 \sisetup{detect-weight=true,detect-family=true}
 
 % Standard AAS/ADS journal abbreviations, used in the reference list.
@@ -73,20 +67,22 @@ auditable reasoning, and post-hoc attributions explain a surrogate rather than
 the deployed decision. We present the first Concept Bottleneck Model for
 galaxy morphology: a \textsc{Zoobot} ConvNeXt predicts seventeen physically
 named concepts---ten Galaxy Zoo tasks and seven \textsc{statmorph}
-statistics---and a symbolic-regression head of 153 operator nodes, printed in
-full, maps them to a Hubble type under split-conformal uncertainty. On
-$40\,498$ Galaxy Zoo Evo galaxies we quantify what interpretability costs
-rather than claiming it is free: an unconstrained ConvNeXt reaches
-$\kappa=0.601$ against the symbolic head's $0.571$, so the bottleneck gives up
-$0.030$, while symbolic, dense-linear and boosted-tree heads over the same
-concepts agree to within $0.002$. The cost is therefore attributable to the
-concept layer, not to the symbolic form, which is obtained at no further
-penalty and replaces $1.5\times10^{7}$ parameters. Two findings qualify this.
-Conformal coverage is marginally exact ($88.9\%$ against a $90\%$ target) but
-conditionally severe: per-class coverage spans $0.98$ for ellipticals to
-$0.08$ for the rarest spiral, so the guarantee is met by over-covering the
-dominant class---a failure mode that directly threatens rare-object science.
-Applying the frozen pipeline to $161\,395$ Euclid Q1 galaxies preserves
+statistics---and a symbolic-regression head of 153 operator nodes maps them to
+a Hubble type under split-conformal uncertainty. The seven governing equations
+are printed in full, so the deployed decision can be read and criticised
+directly. On $40\,498$ Galaxy Zoo Evo galaxies we quantify what
+interpretability costs rather than claiming it is free: an unconstrained
+ConvNeXt reaches $\kappa=0.601$ against the symbolic head's $0.571$, while
+symbolic, dense-linear and boosted-tree heads over the same concepts agree to
+within $0.002$. The cost is therefore attributable to the concept layer, not to
+the symbolic form, which replaces $1.5\times10^{7}$ parameters at no further
+penalty. Two findings qualify this. Conformal coverage is marginally exact
+($88.9\%$ against $90\%$) but conditionally severe: per-class coverage spans
+$0.98$ for ellipticals to $0.08$ for the rarest spiral, so the guarantee is met
+by over-covering the dominant class. Class-conditional calibration lifts
+worst-case coverage to $0.885$ but triples mean set size and removes singleton
+predictions altogether---the reliability statement is repaired, the information
+is not. Applying the frozen pipeline to $161\,395$ Euclid Q1 galaxies preserves
 accuracy while a symbolic refit recovers only $42\%$ of the reference rules'
 concept usage. Accuracy transfer and interpretation transfer are distinct
 properties, and an accuracy-only audit certifies a pipeline whose explanations
@@ -125,7 +121,7 @@ with the computation it purports to describe, and that in consequential
 settings one should instead constrain the model to be interpretable by
 construction.
 
-Concept Bottleneck Models~\citep{koh2020} implement that constraint. Every
+Concept Bottleneck Models (CBMs)~\citep{koh2020} implement that constraint. Every
 prediction is forced through an intermediate layer of individually supervised,
 named concepts; the final classifier sees nothing else. The architecture
 remains active in interpretable-ML research, with post-hoc
@@ -208,9 +204,9 @@ below are released (Section~\ref{sec:availability}).
 
 We use Galaxy Zoo Evo~\citep{walmsley2025gzevo}, restricted to the DESI Legacy
 Imaging pool (\code{dataset\_name = gz\_desi}), which aggregates the GZD-5 and
-GZD-8 campaigns~\citep{walmsley2022,walmsley2023desi}. We process six of the
-thirty released training shards, $\sim\!1.3\times10^{5}$ raw rows, delivered
-as $224\times224$ three-band cutouts at the DECaLS native pixel scale of
+GZD-8 campaigns~\citep{walmsley2022,walmsley2023desi}. We process twelve of
+the thirty released training shards, $265\,692$ raw rows, delivered as
+$224\times224$ three-band cutouts at the DECaLS native pixel scale of
 $0.262''$. This is a deliberate subsample: \citet{walmsley2024scaling} show
 that morphology-model performance on Galaxy Zoo imagery continues to improve
 with training-set size, so the absolute metrics reported here should be read
@@ -245,7 +241,20 @@ smooth-or-featured $\rightarrow$ merger test $\rightarrow$ edge-on test
 $\rightarrow$ spiral-arm test $\rightarrow$ winding $\times$ bulge size for
 spiral subtype. At each node we take the plurality answer subject to a
 clean-sample threshold of $0.5$; objects for which no answer clears threshold
-are discarded as unclassified. This yields $40\,498$ labelled galaxies.
+at any node are discarded as unclassified.
+
+The full selection is therefore: $265\,692$ objects processed, $137\,876$
+surviving the quality cuts of the previous subsection, and $40\,498$
+retained after label derivation. The $97\,378$ objects lost at the final
+step ($70.6\%$ of those entering it) failed the $0.5$ threshold somewhere in
+the tree, overwhelmingly at the spiral sub-type nodes where volunteers
+disagree most. That fraction is a property of the threshold, not of the
+imaging: a lower threshold retains more galaxies at the cost of noisier
+labels, and the value adopted here follows the clean-sample convention of
+\citet{walmsley2022}. The surviving sample is thus biased toward
+morphologically unambiguous systems, which inflates absolute accuracy
+relative to a magnitude-limited sample and is the reason we compare methods
+on identical splits rather than quoting accuracy against the literature.
 
 \subsection{Splits and leakage control}
 
@@ -300,7 +309,68 @@ treatment pending dataset access.
 
 The pipeline comprises three stages, each frozen before the next is evaluated.
 Algorithm~\ref{alg:pipeline} states the procedure in full; the subsections
-below give the reasoning behind each design choice.
+below give the reasoning behind each design choice. Because the argument of
+this paper is that the method should be auditable by the astronomers who would
+use it, we define the machine-learning terms it depends on rather than
+assuming them. Table~\ref{tab:glossary} collects those used repeatedly;
+each is also defined at first use in the text.
+
+\begin{table}[htbp]
+\centering
+\caption{Machine-learning terms used throughout, with the meaning they carry
+here. Metrics are defined on the test or validation split as indicated in each
+table caption.}
+\label{tab:glossary}
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{p{0.26\textwidth}p{0.68\textwidth}}
+\toprule
+Term & Meaning in this paper \\
+\midrule
+Concept bottleneck & An architecture in which every prediction must pass
+through a layer of individually supervised, named quantities. The final
+classifier sees those quantities and nothing else. \\
+Backbone / fine-tuning & A network pretrained on a large image set, whose
+weights are then further trained on the task at hand rather than learned from
+scratch. \\
+Early stopping & Halting training when performance on a held-out split stops
+improving, to avoid fitting noise in the training set. \\
+Cross-validation & Repeatedly refitting on part of the data and scoring on the
+part held out, so that a selection is made on data the candidate has not
+seen. \\
+One-vs-rest & Reducing a seven-class problem to seven binary problems, each
+asking ``is this galaxy of type $k$ or not''. \\
+Pareto front & The set of candidate expressions for which no other candidate
+is both simpler and more accurate; the trade-off curve from which one must
+choose. \\
+Softmax & The map $z_k \mapsto e^{z_k}/\sum_j e^{z_j}$, which turns arbitrary
+scores into positive numbers summing to one. Here it carries no probabilistic
+meaning (Section~\ref{sec:stage3}). \\
+AUC & Area under the receiver-operating-characteristic curve: the probability
+that a randomly chosen positive object is scored above a randomly chosen
+negative one. $0.5$ is chance, $1$ is perfect. \\
+Macro-$F_1$ & The $F_1$ score computed separately for each class and then
+averaged with equal weight, so rare classes count as much as common ones. \\
+Cohen's $\kappa$ & Agreement between prediction and truth after subtracting
+the agreement expected by chance given the class frequencies. $0$ is chance,
+$1$ is perfect; it is the statistic least flattered by a dominant class. \\
+Expected calibration error (ECE) & The average gap between how confident a
+model is and how often it is right at that confidence. \\
+Conformal prediction & A procedure returning a \emph{set} of labels guaranteed
+to contain the truth a specified fraction of the time
+(Section~\ref{sec:stage3}). \\
+Coverage & The fraction of galaxies whose true type lies in their prediction
+set. \emph{Marginal} coverage averages over all galaxies; \emph{conditional}
+coverage is computed within each true class separately. \\
+Domain shift & Applying a model to data drawn differently from its training
+data --- here, a different telescope, resolution and passband
+(Section~\ref{sec:stability}). \\
+Jaccard index & The size of the intersection of two sets divided by the size
+of their union: what fraction of everything mentioned by either is mentioned
+by both. \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \begin{algorithm}[htbp]
 \SetAlgoLined
@@ -339,7 +409,7 @@ Predict $\hat y(\hat c) = \arg\max_k g_k(\hat c)$\;
 \vspace{2pt}
 \textbf{Stage 3 --- conformal calibration}\;
 $s_i \leftarrow 1 - \mathrm{softmax}_k\!\left[g_k(\hat c_i)\right]_{y_i}$
-for $i \in \mathcal{D}_{\rm cal}$ \tcp*{LAC score}
+for $i \in \mathcal{D}_{\rm cal}$ \tcp*{least-ambiguous-set score}
 $\hat q \leftarrow \lceil (n_{\rm cal}+1)(1-\alpha)\rceil / n_{\rm cal}$
 empirical quantile of $\{s_i\}$\;
 $C(x) \leftarrow \{k : 1 - \mathrm{softmax}_k[g(\hat c)] \le \hat q\}$\;
@@ -352,6 +422,84 @@ uncertainty.}
 \subsection{Stage 1: concept predictor}
 \label{sec:stage1}
 
+\paragraph{The concept vocabulary.}
+The concept layer is the interface between the image and the symbolic
+classifier, and it is the only channel through which pixels can influence the
+predicted Hubble type. We therefore state it in full before describing how it
+is trained. Table~\ref{tab:concepts} lists all seventeen concepts, their
+provenance, and the physical property each is intended to carry.
+
+Ten are \emph{perceptual}: the Galaxy Zoo decision-tree tasks, each a question
+put to volunteers about a visible structure (is the galaxy smooth or featured;
+is the disc edge-on; is there a bar; how tightly are the arms wound). Their
+targets are the volunteer vote fractions over the permitted answers, so a
+categorical concept with $J$ answers is supervised as a $J$-way distribution
+rather than a single label. Seven are \emph{structural}: the non-parametric
+morphology statistics computed by \textsc{statmorph}
+(Section~\ref{sec:data}), each with an established physical reading
+--- concentration tracks the bulge-to-total light ratio, asymmetry and
+smoothness track merger-driven and star-formation-driven irregularity, Gini
+and $M_{20}$ track how the light is distributed and where the brightest
+regions sit, and the S\'ersic index and effective radius parametrise the
+overall light profile \citep{conselice2003,lotz2004,rodriguez2019}.
+
+One bookkeeping point matters for reading the rules in
+Appendix~\ref{app:rules}. The symbolic head does not consume seventeen
+numbers. Each categorical concept enters as one predicted vote fraction per
+permitted answer, so the ten perceptual concepts expand to thirty-two
+answer-level quantities --- for the two binary tasks one of the two
+complementary fractions is dropped, since it carries no independent
+information --- which with the seven structural statistics gives thirty-nine
+inputs. We use \emph{concept} for the seventeen physical
+quantities and \emph{concept variable} for the thirty-nine numbers a rule may
+reference. Concept fidelity (Section~\ref{sec:fidelity}) is reported per
+concept; rule composition (Section~\ref{sec:rules}) is reported per concept
+variable.
+
+\begin{table}[htbp]
+\centering
+\caption{The concept vocabulary: the complete set of intermediate variables
+through which every prediction passes. Perceptual concepts are supervised on
+Galaxy Zoo vote fractions, one predicted fraction per answer; structural
+concepts are supervised on \textsc{statmorph} measurements. The column
+$n_{\rm var}$ gives the number of concept variables the concept contributes to
+the symbolic head; for the two binary tasks one of the two complementary vote
+fractions is dropped to remove the exact collinearity, so they contribute one
+variable each rather than two.}
+\label{tab:concepts}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llcl}
+\toprule
+Concept & Answers / range & $n_{\rm var}$ & Physical reading \\
+\midrule
+\multicolumn{4}{l}{\emph{Perceptual --- Galaxy Zoo tasks, supervised on vote fractions}}\\
+Smooth-or-featured & smooth, featured/disc, artefact & 3 & presence of resolved structure \\
+Disc edge-on       & yes, no                        & 1 & viewing inclination \\
+Bar                & strong, weak, none             & 3 & non-axisymmetric inner potential \\
+Has spiral arms    & yes, no                        & 1 & ongoing disc star formation \\
+Bulge size         & dominant $\rightarrow$ none    & 5 & bulge-to-total light ratio \\
+How rounded        & round, in-between, cigar       & 3 & projected axis ratio \\
+Edge-on bulge      & boxy, rounded, none            & 3 & pseudo- vs classical bulge \\
+Spiral winding     & tight, medium, loose           & 3 & arm pitch angle (Hubble stage) \\
+Spiral arm count   & 1, 2, 3, 4, $>$4, can't tell   & 6 & arm multiplicity \\
+Merging            & none, minor, major, merger     & 4 & interaction state \\
+\midrule
+\multicolumn{4}{l}{\emph{Structural --- \textsc{statmorph}, supervised on measured values}}\\
+Concentration $C$      & continuous & 1 & central light concentration \\
+Asymmetry $A$          & continuous & 1 & rotational residual; disturbance \\
+Smoothness $S$         & continuous & 1 & clumpiness on small scales \\
+Gini $G$               & continuous & 1 & inequality of the light distribution \\
+$M_{20}$               & continuous & 1 & spatial extent of the brightest $20\%$ \\
+S\'ersic index $n$     & continuous & 1 & light-profile shape ($n\!\approx\!1$ disc, $4$ bulge) \\
+Effective radius $r_{\rm eff}$ & continuous [pix] & 1 & half-light size \\
+\midrule
+\textbf{17 concepts} & & \textbf{39} & concept variables seen by the rules \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Training.}
 We fine-tune a \textsc{Zoobot} \code{convnext\_nano}
 backbone~\citep{walmsley2023zoobot,liu2022convnext}, pretrained on Galaxy Zoo
 imaging, attaching one linear head per concept: cross-entropy for the ten
@@ -362,9 +510,9 @@ precision, gradient clipping at $1.0$, and early stopping on validation loss
 within a 40-epoch budget.
 
 Concept fidelity is reported per concept against an explicit trivial baseline:
-area under the ROC curve against $0.5$ for categorical concepts, and root-mean-square
-error against the standard deviation of the training target for continuous
-ones. A concept that fails to beat its baseline is reported as such rather
+area under the receiver-operating-characteristic curve (AUC) against $0.5$ for
+categorical concepts, and root-mean-square error (RMSE) against the standard
+deviation of the training target for continuous ones. A concept that fails to beat its baseline is reported as such rather
 than aggregated away.
 
 \subsection{Stage 2: symbolic decision head}
@@ -375,15 +523,27 @@ truth. This is the property that makes the pipeline interpretable end to end:
 at inference no privileged information exists anywhere between pixels and
 label, so the rule set is a complete description of the deployed decision.
 
-For each Hubble class we fit one symbolic regression against the binary
-one-vs-rest indicator, following the formulation used for symbolic
-star--galaxy--quasar separation~\citep{deshpande2026}. We use
-PySR~\citep{cranmer2023} with 100 iterations, a maximum expression size of 25
-nodes, parsimony $3.2\times10^{-3}$, binary operators
-$\{+,-,\times,\div\}$ and unary operators
+For each Hubble class $k$ we fit one symbolic regression against the binary
+one-vs-rest indicator $z = \mathbb{1}[y = k]$, following the formulation used
+for symbolic star--galaxy--quasar
+separation~\citep{deshpande2026}. Symbolic regression searches the space of
+closed-form algebraic expressions directly: it returns a formula, not a set of
+weights for a fixed functional form. The result is seven scalar functions
+$g_k(\hat c)$ of the concept variables, and the predicted type is
+$\arg\max_k g_k$. We use PySR~\citep{cranmer2023} with 100 iterations, a
+maximum expression size of 25 nodes, parsimony $3.2\times10^{-3}$, binary
+operators $\{+,-,\times,\div\}$ and unary operators
 $\{\exp,\log,\sqrt{\cdot},(\cdot)^2,|\cdot|\}$, with argument-complexity
 constraints on $\log$ and $\sqrt{\cdot}$ to suppress ill-conditioned
 subexpressions, in deterministic serial mode.
+
+We measure the size of an expression by its \emph{complexity}: the number of
+nodes in its expression tree, counting each operator, each concept variable
+and each fitted constant once. A complexity of $19$ therefore means nineteen
+such elements, and the total over the seven classes is the number of symbols a
+reader must hold in mind to reproduce the classifier by hand. The seven
+adopted expressions are given in full in Appendix~\ref{app:rules}; they are
+the deployed model, not a summary of it.
 
 Symbolic regression returns a Pareto front trading training loss against
 complexity; selecting by training loss overfits, and selecting by PySR's
@@ -401,6 +561,30 @@ exists.
 \subsection{Stage 3: conformal calibration}
 \label{sec:stage3}
 
+\paragraph{What this stage is for.}
+A classifier that returns a single Hubble type gives the user no way to tell a
+confident assignment from a guess. The usual substitute --- the network's own
+softmax output --- is not a probability in any operational sense: it is a
+monotone transformation of a score, and it is routinely overconfident. For a
+morphology catalogue this matters concretely. If one selects Sd candidates for
+follow-up, one needs to know how often the true type is actually among the
+types the model was prepared to accept, and one needs that number to hold
+without believing anything about the model's internals.
+
+Conformal prediction supplies exactly that. Instead of a single label it
+returns a \emph{set} of labels, sized so that the set contains the true type a
+specified fraction of the time. The construction is purely empirical: it
+measures on held-out data how wrong the model's scores typically are, and
+inflates the set until the observed error rate matches the requested one. The
+guarantee it delivers is finite-sample and distribution-free --- it holds for
+any scoring function whatever, including a set of arbitrary analytic
+expressions with no probabilistic interpretation, which is precisely our
+situation. The price is that the answer is a set rather than a label, and the
+average set size becomes the measure of how much the model actually knows: a
+set of size one is a confident assignment, a set of size four is close to an
+abstention.
+
+\paragraph{Construction.}
 Let $\pi_k(x) = \mathrm{softmax}_k[g(\hat c(x))]$ denote the normalised
 symbolic scores. Using the least-ambiguous-set (LAC) conformity score
 $s(x,y) = 1 - \pi_y(x)$ on the calibration split, we take $\hat q$ as the
@@ -417,29 +601,97 @@ here, since $\pi$ is a softmax over arbitrary analytic expressions and carries
 no probabilistic semantics. We set $\alpha = 0.10$ and use
 MAPIE~\citep{taquet2022}.
 
-Equation~\eqref{eq:coverage} is a statement about the marginal distribution.
-It does \emph{not} imply
-$\mathbb{P}[y \in C(x)\,|\,y=k] \ge 1-\alpha$ for each class $k$, and
-Section~\ref{sec:calibration} shows the two differ sharply in this setting.
+In words, and reading the symbols in turn: $x$ is a galaxy image and $y$ its
+true Hubble type; $\hat c(x)$ are the concepts Stage~1 predicts from it;
+$\pi_k(x)$ is the model's normalised preference for type $k$; the conformity
+score $s(x,y) = 1 - \pi_y(x)$ is large when the model disliked the type that
+turned out to be correct, so it measures how surprised the model was; $\hat q$
+is the level of surprise that only the worst $10\%$ of calibration galaxies
+exceeded; and the prediction set $C(x)$ collects every type the model finds at
+least that plausible. The miscoverage level $\alpha = 0.10$ is the fraction of
+galaxies we are willing to see fall outside their own prediction set;
+$n_{\rm cal} = 4049$ is the number of calibration galaxies, and the ceiling in
+$\hat q$ is the finite-sample correction that makes
+Equation~\eqref{eq:coverage} exact rather than asymptotic.
+
+\paragraph{Marginal is not conditional.}
+Equation~\eqref{eq:coverage} is a statement about the marginal distribution:
+it constrains the coverage averaged over all galaxies. It does \emph{not}
+imply $\mathbb{P}[y \in C(x)\,|\,y=k] \ge 1-\alpha$ for each class $k$ --- that
+the guarantee also holds separately within each morphological type. On a
+sample where two thirds of the galaxies are ellipticals, a wrapper can satisfy
+the first while failing the second badly, simply by covering ellipticals more
+often than required. Section~\ref{sec:calibration} shows that this is what
+happens here, and Section~\ref{sec:mondrian} implements the corresponding
+class-conditional calibration and reports what it costs.
 
 \subsection{Rule stability under survey shift}
 \label{sec:stability}
 
-To ask whether an explanation transfers, we compare the reference rule set
-against a symbolic refit performed independently on the shifted survey. For
-class $k$ let $U_k^{\rm ref}$ and $U_k^{\rm shift}$ be the sets of concepts
-appearing in the respective expressions. We report the mean per-class Jaccard
-index
+\paragraph{What ``survey shift'' means physically.}
+Two surveys observing the same galaxy do not record the same image. They
+differ in angular resolution, so structure resolved by one is smoothed away by
+the other; in passband, so each is sensitive to a different stellar
+population, and a feature traced by young blue stars may simply be absent at
+redder wavelengths; in depth, so low-surface-brightness features such as tidal
+tails appear or vanish; and in point-spread function, which redistributes
+light between the centre and the outskirts of a profile. Here the reference
+survey is DECaLS at a $0.262''$ pixel scale, and the shifted survey is Euclid
+at roughly $0.1''$ in a redder band. Non-parametric morphology statistics are
+known to respond to all four differences~\citep{ferrari2015}, so both the
+concept layer and any rule built on it are at risk under the change of
+instrument, and the question is whether that risk is realised.
+
+\paragraph{What is compared.}
+Applying a trained model to a new survey tests only whether its \emph{answers}
+survive. To test whether its \emph{reasoning} survives we need a second object
+to compare against, so we perform a \emph{symbolic refit}: the entire Stage-2
+procedure --- the same PySR settings, the same complexity budget, the same
+cross-validated selection --- is run again from scratch on the shifted survey,
+using that survey's own predicted concepts and labels. This yields a second,
+independently discovered rule set for the same classification task. If the
+task is instrument-independent, the two rule sets should invoke the same
+physical quantities; if the reference rules encode something specific to
+DECaLS imaging, they should not.
+
+\paragraph{The comparison metric.}
+For class $k$ let $U_k^{\rm ref}$ be the set of concept variables appearing in
+the reference expression $g_k$ --- read off directly as the symbols the
+formula contains --- and let $U_k^{\rm shift}$ be the corresponding set for
+the Euclid refit. We compare these two sets rather than the two formulae
+because algebraically different expressions can encode the same physical
+reasoning: $v_{\rm ft}\,(1-v_{\rm M3})$ and $v_{\rm ft} - v_{\rm ft}v_{\rm M3}$
+are different strings and the same statement. Concept usage, by contrast, is
+the property an astronomer actually reads off a rule --- which measured
+quantities the classification depends on --- and it is invariant to algebraic
+rearrangement. We therefore quantify agreement with the Jaccard index, the
+standard set-overlap measure, which asks what fraction of the concepts
+mentioned by either rule set is mentioned by both. Its two limits are
+interpretable without reference to any model: $J=1$ means the shifted survey
+elicits reasoning over exactly the same physical quantities, and $J=0$ means
+the two surveys yield disjoint explanations of the same morphological task. We
+report the mean per-class Jaccard index
 \begin{equation}
 J = \frac{1}{K}\sum_{k=1}^{K}
     \frac{|U_k^{\rm ref} \cap U_k^{\rm shift}|}
          {|U_k^{\rm ref} \cup U_k^{\rm shift}|},
 \label{eq:jaccard}
 \end{equation}
-together with the Jaccard index of the five globally most-used concepts,
-weighting each concept by the cross-validated accuracy of the rules invoking
-it. $J=1$ indicates that the shifted survey elicits the same concept usage;
-$J=0$ indicates disjoint explanations for the same classification task.
+together with the Jaccard index of the five globally most-used concept
+variables, where each variable is weighted by the cross-validated accuracy of
+the rules invoking it so that the ranking is not dominated by a term appearing
+once in a weak rule. The per-class index measures whether each individual
+rule is rebuilt from the same ingredients; the top-five index measures whether
+the pipeline as a whole still rests on the same handful of physical
+quantities. A method whose explanations transfer should score high on both.
+
+Equation~\eqref{eq:jaccard} is deliberately coarse: it registers \emph{which}
+concepts a rule uses, not how strongly or in what direction it uses them. That
+makes it a conservative test. Two rule sets can share every concept and still
+combine them differently, so a high $J$ would not by itself prove that the
+explanations agree --- but a low $J$ is unambiguous, since rules built from
+different physical quantities cannot be the same explanation under any
+reading.
 
 %=======================================================================
 \section{Results}
@@ -457,14 +709,18 @@ requiring finer structural discrimination are weaker: edge-on bulge shape
 statistics, $r_{\rm eff}$, $M_{20}$, Sérsic index and concentration are
 predicted at roughly half the target dispersion or better.
 
-Two concepts fail. Smoothness is not predicted better than its standard
-deviation (RMSE $0.087$ against $0.078$), and smooth-or-featured returns an
-undefined AUC because the artifact class is absent from the filtered ground
-truth. Asymmetry is marginal ($0.187$ against $0.190$). Smoothness and
-asymmetry are pixel-scale statistics computed on residuals after smoothing,
-and their sensitivity to resolution and noise is documented
-independently~\citep{ferrari2015}; their failure here is consistent with that
-literature rather than with a defect in the concept predictor.
+Two concepts do not clear the bar, for different reasons. Smoothness is
+genuinely not predicted better than its own standard deviation (RMSE $0.087$
+against $0.078$). Smooth-or-featured is instead \emph{unmeasurable} here: the
+artifact answer is absent from the filtered ground truth, so the one-vs-rest
+AUC is undefined rather than poor. Asymmetry is marginal ($0.187$ against
+$0.190$). Smoothness and asymmetry are both pixel-scale statistics computed on
+residuals after smoothing, and their sensitivity to resolution and noise is
+documented independently~\citep{ferrari2015}; their weakness here is
+consistent with that literature rather than with a defect in the concept
+predictor. All three are inputs available to the symbolic head, which is free
+to ignore them---and, as Table~\ref{tab:rules} shows, the adopted rules do not
+lean on smoothness or asymmetry for any class except Irr.
 
 \begin{table}[htbp]
 \centering
@@ -505,30 +761,158 @@ Smoothness$^\dagger$ & RMSE & 0.087 & 0.078 \\
 \subsection{The rule set}
 \label{sec:rules}
 
-Table~\ref{tab:rules} lists the complete Stage-2 model: seven expressions of
-17--25 nodes, 153 in total. Every rule factors through
-\code{smooth\_or\_featured} and at least one merger or spiral-geometry term,
-reproducing the first-order branching structure of the Galaxy Zoo decision
-tree---recovered from predicted concepts under cross-validated selection, not
-imposed. The elliptical rule is dominated by
-$\code{smooth\_or\_featured\_\_smooth}$ modulated by merger and roundedness
-terms; the Sa and Sd rules, which govern the two rarest classes, achieve high
-cross-validated one-vs-rest accuracy ($0.998$, $0.997$) that reflects the ease
-of separating a class present in $0.2\%$ of objects rather than genuine
-discriminative power.
+The complete Stage-2 model is seven expressions of 17--25 nodes, 153 in total,
+printed in full as Equations~\eqref{eq:rule_E}--\eqref{eq:rule_Irr} in
+Appendix~\ref{app:rules}. Table~\ref{tab:rules} summarises
+them, but the appendix is the model: everything asserted in this section can
+be checked against it by hand, which is the point of building the classifier
+this way. Of the thirty-nine concept variables available, the adopted rules
+reference twenty.
 
-Complexity is not the binding constraint. Figure~\ref{fig:pareto} shows the
-PySR Pareto frontier per class together with the adopted expression. Every
-frontier rises steeply below roughly ten nodes and is close to flat
-thereafter: the accuracy available to a symbolic head over this concept
-vocabulary is essentially exhausted by a handful of terms. The adopted rules
-sit at 17--25 nodes only because cross-validated accuracy is maximised there
-by a small margin, and a reader willing to trade a fraction of a percent could
-take substantially shorter expressions from the same frontiers. The
-$25$-node cap of Section~\ref{sec:stage2} is therefore not what limits
-performance, and the interpretability of the head could be pushed further at
-almost no cost.
+\paragraph{Reading two of the rules.}
+The elliptical score
+\begin{equation*}
+g_{\rm E} = v_{\rm sm}\left[\,1.004 - v_{\rm M3}
+  + 0.690\,v_{\rm ft}\left(2S + v_{\rm cig} - v_{\rm ft} + 0.521\right)\right]
+\end{equation*}
+is the smooth-vote fraction $v_{\rm sm}$ multiplied by a bracket close to
+unity, reduced when the merger vote $v_{\rm M3}$ is high. A galaxy is called
+elliptical when volunteers see no structure and no interaction; the remaining
+terms are second-order corrections carrying the cigar-shaped vote and the
+measured clumpiness, both of which distinguish a genuinely smooth spheroid
+from a smooth-looking edge-on disc. The Sd score
+\begin{equation*}
+g_{\rm Sd} = \sqrt{v_{\rm B0}}\;v_{\rm W_{l}}\,
+  \left[v_{\rm ft}\,v_{\overline{\rm edge}}
+  \left(v_{\rm M3} + v_{\overline{\rm arm}} - v_{\rm B2} - 1.175\right)\right]^{2}
+\end{equation*}
+is a product of four requirements, each of which must be satisfied for the
+score to be appreciable: no bulge, loosely wound arms, a featured face-on
+disc. That is the textbook definition of a late-type spiral, written in
+volunteer votes. Neither expression needed to take this form, and neither was
+constrained to.
 
+\paragraph{Does the rule set recover the Galaxy Zoo branching structure?}
+The submitted version of this paper asserted that it does. We now test the
+claim directly rather than asserting it. Table~\ref{tab:treemap} reports,
+for each class rule, which nodes of the Galaxy Zoo decision tree the rule
+draws concepts from; the entries are read mechanically off the free symbols of
+the expressions in Appendix~\ref{app:rules}.
+
+The correspondence is close but not exact, and both halves matter. The
+spiral-geometry nodes---edge-on, bulge size and arm winding---are used by
+exactly the four spiral classes Sa--Sd and by no other class. In the Galaxy
+Zoo tree these questions are asked only after a galaxy has been called
+featured, non-edge-on and arm-bearing, so the rules have recovered the tree's
+spiral sub-branch and confined it to the classes it governs. Roundedness,
+which the tree asks only on the \emph{smooth} branch, appears in E, S0 and Irr
+and in none of the spirals. The merger node is used by all seven rules,
+consistent with its position as a question asked of every galaxy.
+
+Two departures should be stated plainly. First, six of the seven rules factor
+through the root task, smooth-or-featured; the irregular rule does not, keying
+instead on the merger node and the measured clumpiness $S$. This is a real
+difference from the submitted claim that \emph{every} rule does so, and we
+correct it here. It is also defensible on its own terms: disturbance, not
+absence of structure, is what defines the irregular class. Second, the bar and
+arm-count nodes appear only in the irregular rule, where they enter an
+exponential factor alongside roundedness. These are disc questions appearing
+outside the disc branch, and we do not claim a physical mechanism for it; the
+likely reading is that ``strong bar'' and ``more than four arms'' votes are
+elevated for chaotic systems where volunteers see structure they cannot
+resolve, making them incidental markers of disturbance rather than of bars or
+arms. We flag it as the one place where the recovered usage does not track the
+tree.
+
+The recovery is therefore substantial and partial: the tree's branching order
+is reproduced where the classes are well populated, and it breaks down for the
+class defined by disturbance. That statement is weaker than the one in the
+submitted manuscript, and it is the one the evidence supports.
+
+\paragraph{What the printed equations expose.}
+Two properties are visible in Appendix~\ref{app:rules} that no summary would
+have shown. The Sa rule carries a pole: its denominator $0.636 - v_{\rm B0}$
+vanishes when the no-bulge vote fraction reaches $0.636$, so the score
+diverges on a thin set of inputs. On this sample the pole is never approached
+closely enough to affect a prediction, but it is a latent instability that
+would matter on a survey with a different bulge-vote distribution, and it is
+grounds for refitting the Sa rule with a bounded operator set before deploying
+it elsewhere. The Sb rule, by contrast, is a ratio with a strictly positive
+denominator and is bounded everywhere on $[0,1]^{39}$. A dense linear head
+would have concealed the first and offered no way to establish the second.
+This is the concrete sense in which the rule table buys something: a reader
+can audit the functional form for pathologies, not merely inspect a ranking of
+weights.
+
+\begin{table}[htbp]
+\centering
+\caption{Which Galaxy Zoo decision-tree nodes each class rule draws on,
+read mechanically from the expressions in Appendix~\ref{app:rules}. The tree
+asks the roundedness question only on the smooth branch and the
+winding/bulge/edge-on questions only on the spiral branch; the recovered rules
+respect both restrictions. Node T7 (edge-on bulge shape) is used by no rule.
+The bar and arm-count entries for Irr are discussed in the text.}
+\label{tab:treemap}
+\small
+\setlength{\tabcolsep}{5pt}
+\input{tables/rule_tree_map}
+\end{table}
+
+\paragraph{Is the adopted expression size justified?}
+Figure~\ref{fig:pareto} shows the PySR Pareto frontier per class together with
+the adopted expression. Every frontier rises steeply below roughly ten nodes
+and is close to flat thereafter, which invites the objection that the adopted
+17--25 node expressions are avoidable complexity, or that the
+cross-validated selection has mildly overfitted the frontier. We test this
+directly. From each frontier we take the \emph{smallest} expression whose
+cross-validated accuracy is within $0.005$ of the class best, assemble those
+seven into an alternative rule set, and evaluate it end to end on the same
+splits. The comparison is reported in Table~\ref{tab:compact}.
+
+On the aggregate metrics the objection is largely upheld. The compact set uses
+$31$ nodes against $153$, a reduction of $80\%$, and on the test split it is
+indistinguishable from the adopted set: accuracy $0.776$ against $0.776$ and
+$\kappa$ equal to four decimal places ($\Delta\kappa = -0.00007$). On
+validation, the split on which the adopted rules were selected, it is behind by
+$0.007$ in accuracy and $0.012$ in $\kappa$. That the gap is visible on
+validation and absent on test is itself the signature of mild selection
+overfitting, exactly as the reviewer suspected. A practitioner who cares about
+accuracy or $\kappa$ should therefore take the $31$-node set: four nodes for
+E, seven for S0, eight for Sb, nine for Sc, and a single node each for Sa, Sd
+and Irr.
+
+The macro-$F_1$ column tells a different story, and it is the reason we retain
+the longer expressions. Macro-$F_1$ falls from $0.462$ to $0.421$ on
+validation, and inspection of the compact rules explains why. The
+cross-validated one-vs-rest criterion selects a bare \emph{constant} for both
+Sa ($0.00203$) and Sd ($0.00428$). A constant is a legitimate point on the
+frontier and scores $0.998$ one-vs-rest accuracy on a class present in $0.2\%$
+of objects, simply by never predicting it---but a rule that never fires
+removes its class from the model's output entirely. The compact classifier
+predicts Sa and Sd for no galaxy in either split, while the adopted classifier
+predicts both.
+
+This is a weakness in our own Stage-2 selection statistic that the question
+exposed, and we report it as such. One-vs-rest cross-validated accuracy is
+close to degenerate for a class at $0.2\%$ prevalence, because the constant
+predictor is nearly optimal under it; the adopted rules escape the trap only
+because the full-complexity search happened to find expressions scoring
+marginally higher. A class-balanced selection statistic---balanced accuracy or
+one-vs-rest $F_1$---would be the principled correction, and we recommend it for
+any application of this architecture to an imbalanced sample. We have not
+adopted it here because doing so requires refitting Stage 2 and would change
+every number in the paper.
+
+The conclusion we draw is narrower than the one the submitted version implied.
+The $25$-node cap of Section~\ref{sec:stage2} is not what limits performance,
+and the accuracy available to a symbolic head over this concept vocabulary is
+essentially exhausted by a handful of terms per class. The additional $122$
+nodes buy nothing measurable in accuracy or $\kappa$; what they buy is the
+survival of the two rarest classes as predictable categories, which matters
+precisely because rare morphologies are the ones this paper argues are most at
+risk (Sections~\ref{sec:baselines} and~\ref{sec:calibration}).
+
+\paragraph{Classification performance.}
 On validation the rule set attains accuracy $0.787$, macro-$F_1$ $0.462$ and
 $\kappa = 0.571$ (Fig.~\ref{fig:confusion}). The gap between accuracy and
 macro-$F_1$ follows directly from Table~\ref{tab:balance}: with 49 Sa
@@ -542,8 +926,9 @@ labels themselves are least certain.
 \caption{Stage-2 symbolic decision head: the complete deployed classifier.
 Predicted class is $\arg\max_k g_k$. CV accuracy is five-fold stratified
 one-vs-rest accuracy on held-out training folds; for the rarest classes it is
-inflated by class prior and is not a measure of discriminative power. Full
-expressions are released in machine-readable form.}
+inflated by class prior and is not a measure of discriminative power. This
+table is a summary; the expressions themselves are given in
+Appendix~\ref{app:rules} and released in machine-readable form.}
 \label{tab:rules}
 \footnotesize
 \setlength{\tabcolsep}{4pt}
@@ -562,6 +947,38 @@ Sd  & no bulge, featured, merger   & 17 & 0.997 \\
 \textbf{Total} & & \textbf{153} & \\
 \bottomrule
 \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Compact-rule ablation. ``Compact'' replaces each adopted expression
+with the smallest expression on the same Pareto front whose cross-validated
+accuracy is within $0.005$ of the class best, then evaluates the seven
+together on identical splits. On accuracy and $\kappa$ the two are
+indistinguishable on test at a fifth of the size. The macro-$F_1$ gap is
+diagnostic: the compact selection returns a bare constant for Sa and Sd, so
+those classes are never predicted at all.}
+\label{tab:compact}
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{lrrrrcrrr}
+\toprule
+& & \multicolumn{3}{c}{Validation} & & \multicolumn{3}{c}{Test} \\
+\cmidrule(lr){3-5}\cmidrule(lr){7-9}
+Rule set & Nodes & Acc. & $F_1$ & \kappastat & & Acc. & $F_1$ & \kappastat \\
+\midrule
+Adopted (CV-selected)       & 153 & \textbf{0.787} & \textbf{0.462} & \textbf{0.571} & & 0.776 & \textbf{0.428} & 0.550 \\
+Compact (within $0.005$ CV) &  31 & 0.781 & 0.421 & 0.559 & & 0.776 & 0.411 & 0.549 \\
+\midrule
+$\Delta$ (compact $-$ adopted) & $-122$ & $-0.007$ & $-0.041$ & $-0.012$ & & $-0.000$ & $-0.018$ & $-0.000$ \\
+\bottomrule
+\end{tabular}
+\\[3pt]
+\parbox{\columnwidth}{\footnotesize Compact expression sizes per class:
+E $4$, S0 $7$, Sa $1$, Sb $8$, Sc $9$, Sd $1$, Irr $1$ nodes. The single-node
+rules for Sa and Sd are constants, and the Irr rule reduces to the merger vote
+fraction alone. Classes never predicted: none for the adopted set,
+$\{$Sa, Sd$\}$ for the compact set, on both splits.}
 \end{table}
 
 \begin{figure}[htbp]
@@ -664,7 +1081,9 @@ A concept-importance ranking is only useful if it is stable across reasonable
 modelling choices. We compare the symbolic head's concept usage---each concept
 weighted by the cross-validated accuracy of the rules invoking it---against the
 linear head's coefficient magnitudes and against gradient-boosted-tree feature
-importances, over the twenty concepts shared by all three.
+importances, over the twenty concept variables the symbolic rule set actually
+references (Appendix~\ref{app:rules}), which are the variables on which all
+three models can be compared.
 
 Agreement is moderate: Spearman $\rho = 0.51$ (Pearson $0.60$) against the
 linear head, and $\rho = 0.42$ (Pearson $0.67$) against boosted trees
@@ -680,8 +1099,8 @@ ranking is the decision rule rather than a summary of one.
 \includegraphics[width=\columnwidth]{figures/concept_fidelity.pdf}
 \caption{Rank and linear correlation between the symbolic head's intrinsic
 concept usage and the concept importances assigned by the dense linear head
-and by gradient-boosted trees, over the twenty shared concepts. Agreement is
-moderate, not high.}
+and by gradient-boosted trees, over the twenty concept variables the rule set
+references. Agreement is moderate, not high.}
 \label{fig:fidelity}
 \end{figure}
 
@@ -693,17 +1112,6 @@ on the test split against a $90\%$ target, a deviation of $-0.011$, well
 inside the finite-sample tolerance of $0.038$. Mean prediction-set size is
 $1.46$ of seven classes and $66\%$ of test objects receive a singleton set.
 Equation~\eqref{eq:coverage} is satisfied.
-
-The sets also support a selective-prediction workflow.
-Figure~\ref{fig:selective} plots accuracy on the retained sample against the
-fraction abstained, under two acceptance rules: ranking by softmax confidence,
-and accepting only when the conformal set contains fewer than $k$ classes.
-Retained accuracy rises from $0.776$ on the full test split to $0.868$ at a
-quarter deferred and $0.926$ at half, after which it is flat. A user willing
-to send ambiguous objects to visual inspection can therefore trade
-completeness for purity in a quantified way, and the plateau beyond $50\%$
-abstention indicates that the residual errors are not ones the model's own
-confidence can identify.
 
 Table~\ref{tab:coverage} shows what that guarantee conceals. Coverage
 conditional on true class ranges from $0.982$ for ellipticals to $0.083$ for
@@ -719,9 +1127,18 @@ catalogue and trusting the nominal $90\%$ would be operating at roughly half
 that coverage, and for Sa the prediction sets are essentially uninformative.
 Reporting only marginal coverage in a morphology context is therefore
 misleading, and we recommend that per-class coverage accompany any conformal
-result on imbalanced astronomical samples. Class-conditional conformal
-methods~\citep{ding2023classcond} address this directly and are the natural
-next step.
+result on imbalanced astronomical samples.
+
+The sets also support a selective-prediction workflow.
+Figure~\ref{fig:selective} plots accuracy on the retained sample against the
+fraction abstained, under two acceptance rules: ranking by softmax confidence,
+and accepting only when the conformal set contains fewer than $k$ classes.
+Retained accuracy rises from $0.776$ on the full test split to $0.868$ at a
+quarter deferred and $0.926$ at half, after which it is flat. A user willing
+to send ambiguous objects to visual inspection can therefore trade
+completeness for purity in a quantified way, and the plateau beyond $50\%$
+abstention indicates that the residual errors are not ones the model's own
+confidence can identify.
 
 \begin{table}[htbp]
 \centering
@@ -756,6 +1173,126 @@ completeness for purity in a controlled way.}
 \label{fig:selective}
 \end{figure}
 
+\subsection{Repairing conditional coverage, and what it costs}
+\label{sec:mondrian}
+
+Identifying a reliability failure is of limited use without establishing
+whether it can be fixed, so we implement the fix rather than deferring it. The
+standard remedy is class-conditional, or Mondrian, conformal
+prediction~\citep{vovk2005,ding2023classcond}: instead of one threshold
+calibrated on the pooled calibration set, one threshold $\hat q_k$ is
+calibrated per class, using only the calibration galaxies whose true type is
+$k$,
+\begin{equation}
+C(x) = \left\{k : 1 - \pi_k(x) \le \hat q_k\right\},\qquad
+\hat q_k = \mathrm{Quantile}\!\left(\{s_i\}_{y_i = k};\,
+  \frac{\lceil (n_k+1)(1-\alpha)\rceil}{n_k}\right),
+\label{eq:mondrian}
+\end{equation}
+which delivers the conditional guarantee
+$\mathbb{P}[y \in C(x)\,|\,y=k] \ge 1-\alpha$ for every class separately.
+Nothing upstream is retrained: Stage 1 and Stage 2 are frozen and only the
+calibration step changes, so the comparison isolates the effect of the
+calibration scheme.
+
+Equation~\eqref{eq:mondrian} carries a hard requirement that the marginal
+version does not. The quantile level exceeds unity, and hence no finite
+threshold is valid, unless
+$n_k \ge \lceil 1/\alpha \rceil - 1$, which at $\alpha = 0.10$ means at least
+nine calibration galaxies of that class. Our calibration split contains eight
+Sa galaxies (Table~\ref{tab:balance}). For Sa, therefore, no threshold
+computed from these data can certify $90\%$ conditional coverage, and the only
+valid choice is $\hat q_{\rm Sa} = \infty$: the class enters every prediction
+set. This is not a defect of the method but the honest content of the data ---
+eight galaxies cannot underwrite a $90\%$ guarantee --- and it is worth
+stating as a design rule, since it converts an abstract sample-size concern
+into a concrete threshold that a survey team can check before calibrating.
+
+Table~\ref{tab:mondrian} and Figure~\ref{fig:coverage} report the outcome, and
+it is a trade rather than an improvement.
+
+Conditional validity is restored. Every class with a sufficient calibration
+count is brought to nominal: coverage runs from $0.885$ for Sd to $0.917$ for
+Sc, against a $0.90$ target, and the worst per-class coverage rises from
+$0.083$ to $0.885$. The over-coverage of the dominant class disappears as it
+should---ellipticals fall from $0.982$ to $0.894$---confirming that the
+marginal guarantee had been financed by them. Marginal coverage is unaffected
+($0.889 \rightarrow 0.896$), so nothing is lost on the statistic the submitted
+version reported.
+
+The price is severe. Mean prediction-set size rises from $1.46$ to $3.94$ of
+seven classes, and the fraction of galaxies receiving a singleton set falls
+from $0.659$ to \emph{zero}. Under class-conditional calibration no galaxy in
+the test split is assigned a unique morphological type; the median set contains
+three. The mechanism is visible in the fitted thresholds: because a rare class
+has few calibration objects and the model scores it weakly, its threshold
+$\hat q_k$ sits near $0.88$, which admits that class to almost every set. The
+guarantee is met by making the rare classes nearly always available rather than
+by making the model better at recognising them.
+
+That distinction is the substantive result. Class-conditional calibration
+repairs the \emph{statement} the catalogue makes about its own reliability
+without repairing the \emph{information} it carries, and on this sample the
+repair costs the catalogue its per-object usefulness. A user who needs a
+$90\%$ guarantee for irregulars can have it, but the accompanying answer is
+``this galaxy is one of these four types''. The binding constraint is therefore
+not the calibration scheme but the class imbalance and the calibration budget
+underneath it: with $2701$ elliptical and $8$ Sa calibration galaxies, no
+post-hoc procedure can deliver both conditional validity and informative sets.
+We report both schemes for this reason, and recommend that any morphology
+pipeline adopting conformal prediction report set size and singleton fraction
+alongside coverage, since a coverage figure alone conceals which of the two
+regimes it is operating in.
+
+\begin{table}[htbp]
+\centering
+\caption{Marginal versus class-conditional (Mondrian) conformal calibration on
+the test split at nominal $1-\alpha = 0.90$, with Stage 1 and Stage 2 frozen
+and only the calibration scheme changed. $n_{\rm cal}$ is the number of
+calibration galaxies of that class; class-conditional validity requires
+$n_{\rm cal} \ge 9$ at this $\alpha$.}
+\label{tab:mondrian}
+\small
+\begin{tabular}{lrrrcrr}
+\toprule
+& & \multicolumn{2}{c}{Coverage} & & \multicolumn{2}{c}{Mean $|C(x)|$} \\
+\cmidrule(lr){3-4}\cmidrule(lr){6-7}
+Class & $n_{\rm cal}$ & Marginal & Cond. & & Marginal & Cond. \\
+\midrule
+E   & 2701 & 0.982 & 0.894 & & 1.28 & 3.63 \\
+S0  &  428 & 0.728 & 0.890 & & 1.76 & 4.64 \\
+Sa  &    8 & 0.083 & $1.000^{\dagger}$ & & 2.08 & 5.58 \\
+Sb  &  424 & 0.863 & 0.896 & & 1.69 & 4.34 \\
+Sc  &  242 & 0.657 & 0.917 & & 2.16 & 5.18 \\
+Sd  &   17 & 0.462 & 0.885 & & 2.31 & 5.00 \\
+Irr &  229 & 0.451 & 0.910 & & 1.73 & 4.15 \\
+\midrule
+Worst class      &      & 0.083 & \textbf{0.885} & &      &      \\
+Marginal (all)   & 4049 & 0.889 & 0.896 & & \textbf{1.46} & \textbf{3.94} \\
+Singleton fraction &    & 0.659 & 0.000 & &      &      \\
+\bottomrule
+\end{tabular}
+\\[3pt]
+\parbox{\columnwidth}{\footnotesize $^{\dagger}$ Sa has $n_{\rm cal} = 8 < 9$,
+so no finite threshold is valid and the class enters every prediction set by
+construction. Its coverage of $1.000$ is therefore a statement about the
+calibration budget, not about the model.}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\columnwidth]{figures/coverage_comparison.pdf}
+\caption{Marginal versus class-conditional conformal calibration, per true
+class. \emph{Top:} empirical coverage against the nominal $0.90$ target.
+Marginal calibration meets the target on average by over-covering the dominant
+class, leaving every rare class far below it; class-conditional calibration
+meets it within each class. \emph{Bottom:} the price, in mean prediction-set
+size out of seven classes. Conditional validity roughly triples the set size
+and eliminates singleton predictions entirely, so the two panels must be read
+together.}
+\label{fig:coverage}
+\end{figure}
+
 \subsection{Cross-survey transfer}
 \label{sec:robustness}
 
@@ -773,10 +1310,18 @@ depth, resolution, passband and volunteer campaign, and the Euclid labels come
 from a different vote-fraction distribution---so we report the transfer as an
 observation, not as evidence that Euclid morphology is intrinsically easier.
 
-Calibration degrades. Expected calibration error rises by $0.083$: the
+Calibration degrades. The expected calibration error (ECE), the average gap
+between a model's confidence and its accuracy, rises by $0.083$: the
 pipeline becomes more accurate and simultaneously less able to signal when it
-should not be trusted. Confidence ranking is the first casualty of domain
-shift, before accuracy.
+should not be trusted. Empirical coverage also rises, by $0.074$ to $0.963$
+against the same $0.90$ target. Over-coverage is not a violation of
+Equation~\eqref{eq:coverage}---the guarantee is one-sided---but it is a
+symptom of the same problem: the threshold $\hat q$ calibrated on DECaLS is
+too conservative for Euclid, so prediction sets are systematically larger than
+they need to be and carry less information per object. Exchangeability between
+calibration and test data, which the conformal guarantee assumes, does not
+survive the change of instrument. Confidence ranking is the first casualty of
+domain shift, before accuracy.
 
 Explanations do not transfer. A symbolic refit on Euclid recovers a mean
 per-class concept-usage Jaccard of $0.420$ and a top-five concept overlap of
@@ -831,19 +1376,31 @@ below $0.45$, separating accuracy transfer from interpretation transfer.}
 
 \subsection{What the rule table buys}
 
-The deployed classifier is Table~\ref{tab:rules}. A referee can read it, check
-that the elliptical rule keys on smoothness and the absence of merger
-signatures, verify that spiral subtypes separate on winding and bulge size,
-and identify exactly which concept would have to change to flip a
-classification. That audit is available for a black-box network only through a
-surrogate whose faithfulness is itself in question~\citep{rudin2019}, and
-Section~\ref{sec:agreement} shows that surrogate rankings disagree
-substantially with the intrinsic rule even when accuracy matches.
+The deployed classifier is Equations~\eqref{eq:rule_E}--\eqref{eq:rule_Irr}.
+A reader can check that the elliptical rule keys on the smooth vote and the
+absence of merger signatures, that the spiral subtypes separate on winding and
+bulge size, and that the Sd rule is a product of four independent
+requirements; and can identify exactly which concept would have to change, and
+by how much, to flip any given classification. That audit is available for a
+black-box network only through a surrogate whose faithfulness is itself in
+question~\citep{rudin2019}, and Section~\ref{sec:agreement} shows that
+surrogate rankings disagree substantially with the intrinsic rule even when
+accuracy matches.
 
-The recovered rules reproduce the branching order of the Galaxy Zoo decision
-tree without being told it. That is a consistency check rather than a
-discovery, but it is the kind of check that an uninterpretable model cannot
-offer.
+The audit is not merely a restatement of the accuracy result. It surfaced the
+pole in the Sa rule (Section~\ref{sec:rules}), a latent numerical instability
+that no aggregate metric reports and that a dense head would have hidden
+inside a weight; it establishes that nineteen of the thirty-nine available
+concept variables---including every structural statistic except
+smoothness---are not used at all, which is a substantive negative result about
+what non-parametric morphology contributes once perceptual concepts are
+available; and it permits the branching-structure test of
+Table~\ref{tab:treemap}, which found the correspondence with the Galaxy Zoo
+tree to be close for the well-populated classes and to break down for the
+irregular class. Each of these is a criticism a reader can now level at the
+model. That is what we mean by the claim that interpretability is delivered
+rather than asserted: the model is exposed to objections that a black box
+would not have permitted.
 
 What that audit costs is now quantified rather than asserted: $0.030$ in
 $\kappa$ against an unconstrained network (Section~\ref{sec:baselines}).
@@ -862,10 +1419,41 @@ mergers, disturbed systems, edge-on discs with dust lanes. Table~\ref{tab:covera
 shows these are exactly the classes for which marginal conformal guarantees
 fail hardest. Any selection function built on nominal coverage will be
 optimistic by a factor of two for irregulars in this sample. We regard this as
-the most practically consequential result here: the fix is
-class-conditional conformal calibration, which trades set size for
-per-class validity, and we recommend it as the default in imbalanced
-astronomical settings rather than the marginal variant.
+the most practically consequential result here.
+
+Section~\ref{sec:mondrian} implements the corresponding fix rather than
+recommending it in the abstract, and the outcome revises what we would
+recommend. Class-conditional calibration does restore per-class validity:
+worst-case coverage rises from $0.083$ to $0.885$, and the over-covering of
+ellipticals that had been financing the marginal guarantee disappears. But the
+guarantee is bought, not conjured. Mean set size roughly triples, from $1.46$
+to $3.94$ of seven classes, and the singleton fraction falls from $0.659$ to
+zero: under conditional calibration no galaxy in the test split receives a
+unique morphological type.
+
+The reason is worth separating from the arithmetic. The conditional threshold
+for a rare class sits near $0.88$ because that class has few calibration
+objects and is scored weakly by the model, so it is admitted to almost every
+prediction set. Validity is therefore achieved by keeping the rare classes
+perpetually available rather than by improving discrimination. The reliability
+\emph{statement} is repaired; the \emph{information} is not. On a sample with
+$2701$ elliptical and $8$ Sa calibration galaxies, no post-hoc calibration can
+deliver conditional validity and informative sets at once, because the
+shortfall is in the data rather than in the wrapper.
+
+Two practical consequences follow. First, conditional validity at miscoverage
+$\alpha$ requires at least $\lceil 1/\alpha \rceil - 1$ calibration objects
+\emph{per class}---nine at $90\%$, nineteen at $95\%$. That should govern how a
+calibration split is allocated, stratified toward the rare classes rather than
+proportionally, and should be checked before calibrating rather than
+discovered afterwards in a coverage table. Second, coverage should never be
+reported alone. A pipeline quoting $0.90$ coverage may be returning singletons
+or may be returning half the label space, and only set size and singleton
+fraction distinguish the two. We recommend reporting per-class coverage, mean
+set size and singleton fraction together, and we do not recommend
+class-conditional calibration unconditionally: it is the right choice when a
+per-class guarantee is what the science needs, and the wrong one when a usable
+per-object label is.
 
 \subsection{Interpretation transfer as an evaluation target}
 
@@ -924,7 +1512,36 @@ The transfer numbers in Table~\ref{tab:robustness} describe what happens, not
 why.
 
 \emph{Two concepts fail.} Smoothness does not beat its trivial baseline and
-asymmetry is marginal; rules invoking them inherit that weakness.
+asymmetry is marginal; rules invoking them inherit that weakness. This bears
+directly on Equations~\eqref{eq:rule_E} and~\eqref{eq:rule_Irr}, the only two
+that use a structural statistic, and both use smoothness. Their smoothness
+terms should be read as weakly determined.
+
+\emph{Class-conditional calibration is bounded by the calibration split.}
+Section~\ref{sec:mondrian} restores per-class validity only for classes with
+at least nine calibration galaxies. For Sa it degenerates to unconditional
+inclusion, which is valid but uninformative, and across all classes it
+eliminates singleton predictions entirely. A stratified calibration split
+guaranteeing the minimum count per class would improve the first problem but
+not the second, which is driven by the imbalance itself. We did not re-allocate
+the splits here because doing so would have changed the sample underlying every
+other result in the paper.
+
+\emph{The Stage-2 selection statistic is degenerate for the rarest classes.}
+The compact-rule ablation (Section~\ref{sec:rules}) showed that one-vs-rest
+cross-validated accuracy selects a bare constant for Sa and Sd whenever a
+constant is on the frontier, because a rule that never fires is right $99.8\%$
+of the time on a class at $0.2\%$ prevalence. The adopted rules avoid this
+outcome, but by a small margin rather than by construction. A class-balanced
+selection statistic is the principled fix; applying it requires refitting
+Stage 2 and would change every number reported here, so we identify the
+problem rather than correct it.
+
+\emph{The compact-rule ablation searches only the cached frontiers.} It asks
+whether a shorter expression \emph{already discovered} by the search performs
+comparably, not whether a different search configuration would find a better
+short expression. A dedicated low-complexity run is a stronger test and was
+not performed.
 
 \emph{The symbolic refit is subsampled.} Euclid rule stability is computed on
 a $3000$-object stratified subsample for tractability. The indices should be
@@ -944,7 +1561,9 @@ three-survey claim is currently a two-survey result.
 
 We built a Concept Bottleneck Model for galaxy morphology in which a symbolic
 rule set of 153 operator nodes performs the final classification, wrapped in
-split-conformal prediction. On $40\,498$ Galaxy Zoo Evo galaxies:
+split-conformal prediction. The rule set is printed in full in
+Appendix~\ref{app:rules}, so every claim below about how the model reasons can
+be checked against the model itself. On $40\,498$ Galaxy Zoo Evo galaxies:
 
 \begin{enumerate}
 \item The concept bottleneck costs $0.030$ in $\kappa$ relative to an
@@ -954,13 +1573,29 @@ price is paid for the bottleneck, not for the symbolic form, and buys a
 classifier of 153 operator nodes in place of $1.5\times10^{7}$ parameters. On
 macro-$F_1$ the ordering reverses and every concept-based model exceeds the
 network.
-\item Fifteen of seventeen concepts are recovered above trivial baselines, and
-the discovered rules reproduce the branching structure of the Galaxy Zoo
-decision tree without supervision on that structure.
+\item Fifteen of seventeen concepts are recovered above trivial baselines. The
+discovered rules reproduce the branching structure of the Galaxy Zoo decision
+tree for the well-populated classes without supervision on that structure:
+the spiral-geometry questions appear in exactly the four spiral rules and the
+roundedness question in exactly the three non-spiral rules. The correspondence
+fails for the irregular class, which does not use the root task at all.
 \item Marginal conformal coverage is exact ($0.889$ against $0.90$) while
 conditional coverage spans $0.98$ to $0.08$ across classes. Marginal
 guarantees are inadequate for rare-morphology science, and per-class coverage
-should be reported as standard.
+should be reported as standard. Class-conditional calibration restores
+per-class validity---worst-case coverage $0.083 \rightarrow 0.885$---but
+triples mean set size to $3.94$ of seven classes and eliminates singleton
+predictions entirely. The reliability statement is repaired; the information is
+not, because the shortfall is in the calibration budget rather than in the
+wrapper. Conditional validity additionally requires at least
+$\lceil 1/\alpha \rceil - 1$ calibration objects per class, which should govern
+how calibration splits are allocated.
+\item The adopted $153$-node rule set can be replaced by a $31$-node one with
+no measurable loss in accuracy or $\kappa$ on test. What the extra nodes buy is
+macro-$F_1$: the compact selection returns a constant for the two rarest
+classes, which then disappear from the model's output. One-vs-rest
+cross-validated accuracy is a degenerate selection criterion at $0.2\%$
+prevalence, and class-balanced selection should be preferred.
 \item Under DECaLS $\rightarrow$ Euclid transfer, accuracy is preserved while
 calibration degrades and symbolic refits recover under half the reference
 concept usage. Accuracy transfer does not imply interpretation transfer.
@@ -976,10 +1611,8 @@ can be measured for any morphology pipeline.
 \section*{Data and code availability}
 \label{sec:availability}
 
-% NOTE: this repository is currently PRIVATE. It must be made public (or a
-% Zenodo DOI minted from it) before submission, or this statement is false.
 All code, configurations, random seeds and derived results are available at
-\url{https://github.com/ramc77/GalaxyCBM-SR}. The pipeline reproduces from a
+\url{https://github.com/ramc77/GalaxyCBM-SR-public}. The pipeline reproduces from a
 single \code{make all}; every number quoted in this paper is written to
 \code{results/metrics.json} by the evaluation stage and verified against a
 manifest of paper claims at build time. Galaxy Zoo Evo, Euclid Q1 and
@@ -987,7 +1620,6 @@ Galaxy Zoo JWST data are public
 \citep{walmsley2025gzevo,euclid2025morphology}.
 
 %=======================================================================
-% Elsevier requires both statements below for Astronomy and Computing.
 \section*{CRediT authorship contribution statement}
 
 \textbf{Ram Chand:} Conceptualization, Methodology, Software, Validation,
@@ -1016,10 +1648,62 @@ MAPIE~\citep{taquet2022}.
 
 
 %=======================================================================
-% All entries below verified against arXiv / publisher records.
-% Classic astronomy references (Hubble 1926; Conselice 2003, 2014; Lotz 2004;
-% Ferrari 2015; Dieleman 2015; Dominguez Sanchez 2018) should still be
-% re-checked against ADS at submission time for page/volume accuracy.
+\clearpage
+\appendix
+\section{The deployed symbolic rule set}
+\label{app:rules}
+
+This appendix prints the Stage-2 classifier in full. These seven expressions
+\emph{are} the deployed model: at inference the pipeline evaluates exactly
+these formulae on the predicted concept variables and returns
+$\arg\max_k g_k$. No weight matrix, serialised network or post-processing step
+stands between what is printed here and what the classifier does. A reader
+with Table~\ref{tab:concepts}, the symbol dictionary in
+Table~\ref{tab:symbols} and a calculator can reproduce any prediction the
+model makes.
+
+Each $v$ denotes a \emph{predicted} vote fraction for one answer to one Galaxy
+Zoo task, in $[0,1]$: $v_{\rm sm}$, for instance, is the fraction of
+volunteers the Stage-1 network predicts would call the galaxy smooth. Bars
+denote negative answers, so $v_{\overline{\rm arm}}$ is the predicted fraction
+answering that no spiral arms are visible. $S$ is the \textsc{statmorph}
+smoothness (clumpiness) statistic, the only structural concept any adopted
+rule uses. Of the thirty-nine available concept variables the rules reference
+twenty; the remaining nineteen, including concentration, Gini, $M_{20}$, the
+S\'ersic index and the effective radius, are available to the search and were
+not selected.
+
+\begin{table}[htbp]
+\centering
+\caption{Symbol dictionary for Equations~\eqref{eq:rule_E}--\eqref{eq:rule_Irr},
+grouped by Galaxy
+Zoo decision-tree task. Column two gives the corresponding column name in the
+released concept table.}
+\label{tab:symbols}
+\small
+\setlength{\tabcolsep}{5pt}
+\input{tables/rule_symbols}
+\end{table}
+
+Fitted coefficients are printed to six significant figures. Over
+$2\times10^{5}$ randomly drawn concept vectors this rounding changes the
+predicted class for one vector in $2\times10^{5}$, all of them adjacent to the
+pole in $g_{\rm Sa}$ discussed in Section~\ref{sec:rules}; the exact
+double-precision coefficients are in the released rule table. Expressions are
+shown in SymPy's canonical form, which is the form the pipeline evaluates, so
+constant folding may place a coefficient differently from the raw output of
+the search.
+
+\input{tables/rules_full}
+
+\noindent
+Complexities are $19$ (E), $22$ (S0), $22$ (Sa), $23$ (Sb), $25$ (Sc), $17$
+(Sd) and $25$ (Irr), totalling $153$ nodes; the cross-validated one-vs-rest
+accuracies are those listed in Table~\ref{tab:rules}. For the two rarest
+classes, Sa and Sd, those accuracies are inflated by the class prior and
+should not be read as discriminative power.
+
+%=======================================================================
 \clearpage
 \begin{thebibliography}{99}
 

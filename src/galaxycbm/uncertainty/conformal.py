@@ -185,3 +185,138 @@ def selective_figure(curve: pd.DataFrame, path: str | Path) -> Path:
     ax.legend(loc="lower left", fontsize=8)
     fig.tight_layout(); fig.savefig(path, dpi=120); plt.close(fig)
     return path
+
+
+# ---------------------------------------------------------------------------
+# Class-conditional (Mondrian) conformal prediction
+# ---------------------------------------------------------------------------
+#
+# Split conformal calibrated on a single pooled quantile guarantees only
+# MARGINAL coverage. On an imbalanced sample the guarantee is satisfied by
+# over-covering the dominant class while every rare class falls far below
+# nominal (Section "Calibration" of the paper). The standard fix is Mondrian
+# (class-conditional) conformal prediction: calibrate one quantile per true
+# class, using only the calibration points of that class.
+#
+# For class k with n_k calibration points the finite-sample-valid level is
+#     lvl_k = ceil((n_k + 1)(1 - alpha)) / n_k .
+# When n_k < ceil(1/alpha) - 1 this exceeds 1: no finite quantile of n_k
+# points can certify 1 - alpha coverage, and the only valid choice is
+# q_k = +inf, i.e. class k enters EVERY prediction set. That degeneracy is
+# not a defect of the method — it is the honest statement that eight
+# calibration galaxies cannot underwrite a 90% guarantee.
+
+
+@dataclass
+class MondrianHead:
+    """Per-class LAC thresholds. `q[k]` may be +inf (see module note)."""
+
+    classes: list[str]
+    quantiles: dict[str, float]
+    n_cal: dict[str, int]
+    levels: dict[str, float]
+    degenerate: list[str]        # classes whose quantile had to be +inf
+    alpha: float
+    method: str = "lac"
+
+
+def min_calibration_points(alpha: float) -> int:
+    """Smallest n_k for which a finite class-conditional quantile exists."""
+    return int(np.ceil(1.0 / float(alpha))) - 1
+
+
+def mondrian_conformalize(
+    estimator: SymbolicRuleClassifier,
+    X_cal: pd.DataFrame,
+    y_cal: pd.Series,
+    *,
+    alpha: float,
+) -> MondrianHead:
+    """Calibrate one LAC threshold per true class."""
+    estimator = estimator.fit(X_cal, y_cal)
+    classes = [str(c) for c in estimator.classes_]
+    probs = estimator.predict_proba(X_cal)
+    y = y_cal.astype(str).to_numpy()
+
+    quantiles: dict[str, float] = {}
+    n_cal: dict[str, int] = {}
+    levels: dict[str, float] = {}
+    degenerate: list[str] = []
+
+    for idx, k in enumerate(classes):
+        in_k = y == k
+        n_k = int(in_k.sum())
+        n_cal[k] = n_k
+        if n_k == 0:
+            quantiles[k], levels[k] = float("inf"), float("nan")
+            degenerate.append(k)
+            continue
+        scores = 1.0 - probs[in_k, idx]          # LAC nonconformity
+        level = np.ceil((n_k + 1) * (1.0 - alpha)) / n_k
+        levels[k] = float(level)
+        if level > 1.0:
+            quantiles[k] = float("inf")
+            degenerate.append(k)
+        else:
+            quantiles[k] = float(np.quantile(scores, level, method="higher"))
+
+    return MondrianHead(classes=classes, quantiles=quantiles, n_cal=n_cal,
+                        levels=levels, degenerate=degenerate, alpha=float(alpha))
+
+
+def mondrian_predict_sets(
+    head: MondrianHead,
+    estimator: SymbolicRuleClassifier,
+    X: pd.DataFrame,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Return (point predictions, set mask) under per-class thresholds."""
+    probs = estimator.predict_proba(X)
+    preds = np.asarray(estimator.classes_)[np.argmax(probs, axis=-1)]
+    mask = np.zeros_like(probs, dtype=bool)
+    for idx, k in enumerate(head.classes):
+        mask[:, idx] = (1.0 - probs[:, idx]) <= head.quantiles[k]
+    return preds, mask
+
+
+def mondrian_report(
+    head: MondrianHead,
+    set_mask: np.ndarray,
+    y_true: pd.Series,
+) -> tuple[dict, pd.DataFrame]:
+    """Summary + per-class table for a Mondrian head, matching the marginal API."""
+    y = y_true.astype(str).to_numpy()
+    idx_of = {c: i for i, c in enumerate(head.classes)}
+    covered = np.array([set_mask[i, idx_of[c]] if c in idx_of else False
+                        for i, c in enumerate(y)])
+    sizes = set_mask.sum(axis=1)
+
+    summary = {
+        "alpha": head.alpha,
+        "nominal_coverage": 1.0 - head.alpha,
+        "empirical_coverage": float(covered.mean()),
+        "coverage_gap": float(covered.mean() - (1.0 - head.alpha)),
+        "n": int(len(y)),
+        "mean_set_size": float(sizes.mean()),
+        "median_set_size": float(np.median(sizes)),
+        "singleton_fraction": float((sizes == 1).mean()),
+        "empty_fraction": float((sizes == 0).mean()),
+        "method": f"mondrian-{head.method}",
+        "classes": head.classes,
+        "degenerate_classes": head.degenerate,
+        "min_calibration_points": min_calibration_points(head.alpha),
+    }
+
+    rows: list[dict[str, object]] = []
+    for k in head.classes:
+        in_k = y == k
+        n = int(in_k.sum())
+        rows.append({
+            "class": k,
+            "n": n,
+            "n_calibration": head.n_cal[k],
+            "quantile": head.quantiles[k],
+            "degenerate": k in head.degenerate,
+            "coverage": float(set_mask[in_k, idx_of[k]].mean()) if n else float("nan"),
+            "mean_set_size": float(set_mask[in_k].sum(axis=1).mean()) if n else float("nan"),
+        })
+    return summary, pd.DataFrame(rows).sort_values("class").reset_index(drop=True)

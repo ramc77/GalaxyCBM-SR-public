@@ -32,3 +32,26 @@ claims:
     optional: true
   - path: stages.concepts.fidelity
     optional: true
+
+  # Calibration and parsimony diagnostics — class-conditional conformal
+  # + compact rules. Optional until scripts/run_revision.py has been run.
+  - path: stages.revision.mondrian_summary.marginal.empirical_coverage
+    optional: true
+  - path: stages.revision.mondrian_summary.mondrian.empirical_coverage
+    optional: true
+  - path: stages.revision.mondrian_summary.mondrian.mean_set_size
+    optional: true
+  - path: stages.revision.mondrian_summary.worst_class_coverage_marginal
+    optional: true
+  - path: stages.revision.mondrian_summary.worst_class_coverage_mondrian
+    optional: true
+  - path: stages.revision.mondrian_summary.min_calibration_points_for_validity
+    optional: true
+  - path: stages.revision.mondrian_per_class
+    optional: true
+  - path: stages.revision.compact.delta_validation.cohen_kappa
+    optional: true
+  - path: stages.revision.compact.node_reduction
+    optional: true
+  - path: stages.revision.compact_rules
+    optional: true

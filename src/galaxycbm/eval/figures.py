@@ -251,6 +251,80 @@ def concept_fidelity(fidelity_csv: Path, out: Path) -> Path | None:
     return Path(out)
 
 
+def coverage_comparison(revision_dir: Path, out: Path) -> Path | None:
+    """Marginal vs class-conditional calibration: coverage, and its price.
+
+    Two panels, because the result is a trade rather than an improvement:
+    conditional validity is bought with prediction-set size, and a figure
+    showing only coverage would misrepresent it.
+
+    Returns None when scripts/run_revision.py has not been executed, so
+    `build_all` stays usable on a fresh clone.
+    """
+    import matplotlib.pyplot as plt
+
+    src = Path(revision_dir) / "mondrian_per_class.csv"
+    if not src.exists():
+        return None
+    df = pd.read_csv(src)
+    needed = {"class", "marginal_coverage", "mondrian_coverage", "n",
+              "marginal_mean_set_size", "mondrian_mean_set_size"}
+    if not needed <= set(df.columns):
+        return None
+
+    order = [c for c in ("E", "S0", "Sa", "Sb", "Sc", "Sd", "Irr")
+             if c in set(df["class"])]
+    df = df.set_index("class").loc[order].reset_index()
+    degenerate = (df["degenerate"].astype(bool).to_numpy()
+                  if "degenerate" in df.columns else np.zeros(len(df), bool))
+
+    apply_paper_style()
+    colors = series_palette(2)
+    x = np.arange(len(df))
+    width = 0.38
+    n_classes = len(df)
+
+    fig, (ax0, ax1) = plt.subplots(2, 1, figsize=(6.4, 5.4), sharex=True)
+
+    ax0.bar(x - width / 2, df["marginal_coverage"], width,
+            label="marginal", color=colors[0])
+    ax0.bar(x + width / 2, df["mondrian_coverage"], width,
+            label="class-conditional", color=colors[1])
+    ax0.axhline(0.90, color="k", lw=1.0, ls="--", zorder=4)
+    ax0.annotate("nominal 0.90", xy=(n_classes - 0.5, 0.90), xytext=(0, 4),
+                 textcoords="offset points", ha="right", fontsize=8)
+    ax0.set_ylabel("empirical coverage")
+    ax0.set_ylim(0, 1.30)
+    ax0.set_yticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
+    # Legend above the axes: every in-axes corner collides with a bar.
+    ax0.legend(loc="lower center", bbox_to_anchor=(0.5, 1.02), ncol=2,
+               fontsize=9, frameon=False)
+
+    # A class calibrated on too few points is included by construction; say so
+    # rather than letting a bar at 1.0 read as success.
+    for i, deg in enumerate(degenerate):
+        if deg:
+            ax0.annotate(r"$n_{\rm cal}<9$", xy=(i + width / 2, 1.0),
+                         xytext=(0, 5), textcoords="offset points",
+                         ha="center", va="bottom", fontsize=7.5)
+
+    ax1.bar(x - width / 2, df["marginal_mean_set_size"], width, color=colors[0])
+    ax1.bar(x + width / 2, df["mondrian_mean_set_size"], width, color=colors[1])
+    ax1.axhline(1.0, color="k", lw=0.8, ls=":", zorder=4)
+    ax1.annotate("singleton", xy=(n_classes - 0.5, 1.0), xytext=(0, 4),
+                 textcoords="offset points", ha="right", fontsize=8)
+    ax1.set_ylabel(r"mean $|C(x)|$  (of %d)" % n_classes)
+    ax1.set_ylim(0, n_classes)
+
+    ax1.set_xticks(x)
+    ax1.set_xticklabels([f"{c}\n$n$={int(n)}" for c, n in zip(df["class"], df["n"])])
+    fig.align_ylabels([ax0, ax1])
+    fig.tight_layout()
+    Path(out).parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(out); plt.close(fig)
+    return Path(out)
+
+
 def build_all(results_root: Path, paper_root: Path) -> list[Path]:
     figs_dir = Path(paper_root) / "figures"
     figs_dir.mkdir(parents=True, exist_ok=True)
@@ -262,6 +336,7 @@ def build_all(results_root: Path, paper_root: Path) -> list[Path]:
         (coverage_and_selective,(results_root / "uncertainty",                 figs_dir / "selective_risk.pdf")),
         (robustness_shift,      (results_root / "tables" / "robustness.csv",   figs_dir / "robustness_shift.pdf")),
         (concept_fidelity,      (results_root / "baselines" / "fidelity.csv",  figs_dir / "concept_fidelity.pdf")),
+        (coverage_comparison,   (results_root / "revision",                    figs_dir / "coverage_comparison.pdf")),
     ]:
         p = maker(*args)
         if p is not None:

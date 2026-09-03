@@ -12,6 +12,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
 import pandas as pd
 
 from galaxycbm.eval import (
@@ -81,6 +83,14 @@ def main() -> None:
             label="tab:robustness",
             floatfmt=".3f",
         ))
+
+    # Appendix A (full rule set, symbol dictionary, decision-tree map) is
+    # derived from the same rule table, so it is regenerated here rather than
+    # maintained by hand.
+    if rules_csv.exists():
+        from export_rule_appendix import render as render_rule_appendix
+
+        render_rule_appendix(rules_csv, tables_out)
 
     claims_path = PAPER_ROOT / "claims.yaml"
     if claims_path.exists():

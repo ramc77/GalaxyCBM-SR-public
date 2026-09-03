@@ -69,6 +69,12 @@ def aggregate_metrics(root: Path = RESULTS_ROOT) -> dict[str, Any]:
             "robustness":  _stage("robustness",  str(root / "robustness")) | {
                 "table": _read_csv_records(root / "tables" / "robustness.csv"),
             },
+            "revision":    _stage("revision",    str(root / "revision")) | {
+                "mondrian_summary":  _read_json(root / "revision" / "mondrian_summary.json"),
+                "mondrian_per_class": _read_csv_records(root / "revision" / "mondrian_per_class.csv"),
+                "compact":           _read_json(root / "revision" / "compact_comparison.json"),
+                "compact_rules":     _read_csv_records(root / "revision" / "compact_rules.csv"),
+            },
             "data.concepts": _stage("data.concepts", str(root / "data.concepts")),
             "data.labels":   _stage("data.labels",   str(root / "data.labels")),
         },

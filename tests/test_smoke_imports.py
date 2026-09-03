@@ -24,6 +24,7 @@ MODULES = [
     "galaxycbm.symbolic",
     "galaxycbm.symbolic.features",
     "galaxycbm.symbolic.fit",
+    "galaxycbm.symbolic.parsimony",
     "galaxycbm.symbolic.eval",
     "galaxycbm.uncertainty",
     "galaxycbm.uncertainty.estimator",
