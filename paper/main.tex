@@ -881,16 +881,24 @@ accuracy or $\kappa$ should therefore take the $31$-node set: four nodes for
 E, seven for S0, eight for Sb, nine for Sc, and a single node each for Sa, Sd
 and Irr.
 
-The macro-$F_1$ column tells a different story, and it is the reason we retain
-the longer expressions. Macro-$F_1$ falls from $0.462$ to $0.421$ on
-validation, and inspection of the compact rules explains why. The
+The macro-$F_1$ column tells a different story. Macro-$F_1$ falls from $0.462$
+to $0.421$ on validation, and inspection of the compact rules explains why. The
 cross-validated one-vs-rest criterion selects a bare \emph{constant} for both
 Sa ($0.00203$) and Sd ($0.00428$). A constant is a legitimate point on the
 frontier and scores $0.998$ one-vs-rest accuracy on a class present in $0.2\%$
-of objects, simply by never predicting it---but a rule that never fires
-removes its class from the model's output entirely. The compact classifier
-predicts Sa and Sd for no galaxy in either split, while the adopted classifier
-predicts both.
+of objects, simply by never predicting it---but a rule that never fires removes
+its class from the model's output entirely. The compact classifier predicts Sa
+and Sd for no galaxy in either split.
+
+The gap is almost entirely one class, and it is worth being precise about how
+small it is. The adopted rules recover Sd at $F_1 = 0.222$ on validation and
+$0.118$ on test, correctly identifying $4$ and $2$ of $26$ objects
+respectively. Sa is recovered by \emph{neither} rule set: the adopted
+classifier predicts it once or twice per split and is wrong every time, giving
+$F_1 = 0$ on both splits, exactly as Table~\ref{tab:balance} and
+Section~\ref{sec:limitations} would lead one to expect from $49$ training
+examples. So the honest accounting is that the additional $122$ nodes buy a
+handful of correctly classified Sd galaxies and nothing else measurable.
 
 This is a weakness in our own Stage-2 selection statistic that the question
 exposed, and we report it as such. One-vs-rest cross-validated accuracy is
@@ -903,14 +911,18 @@ any application of this architecture to an imbalanced sample. We have not
 adopted it here because doing so requires refitting Stage 2 and would change
 every number in the paper.
 
-The conclusion we draw is narrower than the one the submitted version implied.
-The $25$-node cap of Section~\ref{sec:stage2} is not what limits performance,
-and the accuracy available to a symbolic head over this concept vocabulary is
-essentially exhausted by a handful of terms per class. The additional $122$
-nodes buy nothing measurable in accuracy or $\kappa$; what they buy is the
-survival of the two rarest classes as predictable categories, which matters
-precisely because rare morphologies are the ones this paper argues are most at
-risk (Sections~\ref{sec:baselines} and~\ref{sec:calibration}).
+The conclusion we draw is narrower than the one the submitted version implied,
+and we state the trade rather than settle it. The $25$-node cap of
+Section~\ref{sec:stage2} is not what limits performance, and the accuracy
+available to a symbolic head over this concept vocabulary is essentially
+exhausted by a handful of terms per class. A reader whose priority is legibility
+should take the $31$-node set, and we would not argue against that choice: it
+costs nothing in accuracy or $\kappa$ and it is five times smaller. We retain
+the longer expressions because a classifier that silently drops a Hubble type is
+a different object from one that predicts it badly, and because the compact
+set's route to parity---deleting the classes it cannot model---is the behaviour
+this paper is written to make visible. Both rule sets are released so the choice
+need not be taken on our authority.
 
 \paragraph{Classification performance.}
 On validation the rule set attains accuracy $0.787$, macro-$F_1$ $0.462$ and
@@ -957,7 +969,9 @@ accuracy is within $0.005$ of the class best, then evaluates the seven
 together on identical splits. On accuracy and $\kappa$ the two are
 indistinguishable on test at a fifth of the size. The macro-$F_1$ gap is
 diagnostic: the compact selection returns a bare constant for Sa and Sd, so
-those classes are never predicted at all.}
+those classes are never predicted at all. The gap is almost entirely Sd, which
+the adopted set recovers at $F_1 = 0.222$ (validation) and $0.118$ (test); Sa
+is recovered by neither set.}
 \label{tab:compact}
 \small
 \setlength{\tabcolsep}{5pt}
@@ -1593,9 +1607,10 @@ how calibration splits are allocated.
 \item The adopted $153$-node rule set can be replaced by a $31$-node one with
 no measurable loss in accuracy or $\kappa$ on test. What the extra nodes buy is
 macro-$F_1$: the compact selection returns a constant for the two rarest
-classes, which then disappear from the model's output. One-vs-rest
-cross-validated accuracy is a degenerate selection criterion at $0.2\%$
-prevalence, and class-balanced selection should be preferred.
+classes, which then disappear from the model's output entirely, whereas the
+adopted set still recovers a handful of Sd galaxies. Neither set recovers Sa.
+One-vs-rest cross-validated accuracy is a degenerate selection criterion at
+$0.2\%$ prevalence, and class-balanced selection should be preferred.
 \item Under DECaLS $\rightarrow$ Euclid transfer, accuracy is preserved while
 calibration degrades and symbolic refits recover under half the reference
 concept usage. Accuracy transfer does not imply interpretation transfer.

@@ -28,7 +28,8 @@ def train_linear_cbm(
         max_iter=max_iter,
         solver="lbfgs",
         random_state=seed,
-        n_jobs=1,
+        # No n_jobs: it never applied to the lbfgs solver, sklearn 1.8 deprecated
+        # it and 1.10 removes it. Determinism comes from random_state.
     )
     est.fit(X_train, y_train.astype(str).to_numpy())
     y_pred = pd.Series(est.predict(X_val), index=X_val.index)
