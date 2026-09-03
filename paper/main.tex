@@ -144,7 +144,7 @@ prerequisites for deploying an interpretable classifier on survey data.
 \emph{A symbolic decision head.} We replace the CBM's usual dense linear
 layer with compact analytic expressions discovered by symbolic
 regression~\citep{cranmer2023}. The deployed classifier is then a table of
-seven equations that a referee can read, not a weight matrix over concepts.
+seven equations that an astronomer can read, not a weight matrix over concepts.
 Symbolic regression has been applied to astronomical classification boundaries,
 notably in star--galaxy--quasar
 separation~\citep{deshpande2026,llorella2025}, where compact analytic
@@ -309,11 +309,9 @@ treatment pending dataset access.
 
 The pipeline comprises three stages, each frozen before the next is evaluated.
 Algorithm~\ref{alg:pipeline} states the procedure in full; the subsections
-below give the reasoning behind each design choice. Because the argument of
-this paper is that the method should be auditable by the astronomers who would
-use it, we define the machine-learning terms it depends on rather than
-assuming them. Table~\ref{tab:glossary} collects those used repeatedly;
-each is also defined at first use in the text.
+below give the reasoning behind each design choice. Table~\ref{tab:glossary}
+collects the machine-learning terms used repeatedly in what follows, each also
+defined at first use in the text.
 
 \begin{table}[htbp]
 \centering
@@ -793,8 +791,9 @@ volunteer votes. Neither expression needed to take this form, and neither was
 constrained to.
 
 \paragraph{Does the rule set recover the Galaxy Zoo branching structure?}
-The submitted version of this paper asserted that it does. We now test the
-claim directly rather than asserting it. Table~\ref{tab:treemap} reports,
+A claim about what an opaque search procedure discovered needs a check
+external to the fitting itself, so we test this directly rather than asserting
+it. Table~\ref{tab:treemap} reports,
 for each class rule, which nodes of the Galaxy Zoo decision tree the rule
 draws concepts from; the entries are read mechanically off the free symbols of
 the expressions in Appendix~\ref{app:rules}.
@@ -811,10 +810,9 @@ consistent with its position as a question asked of every galaxy.
 
 Two departures should be stated plainly. First, six of the seven rules factor
 through the root task, smooth-or-featured; the irregular rule does not, keying
-instead on the merger node and the measured clumpiness $S$. This is a real
-difference from the submitted claim that \emph{every} rule does so, and we
-correct it here. It is also defensible on its own terms: disturbance, not
-absence of structure, is what defines the irregular class. Second, the bar and
+instead on the merger node and the measured clumpiness $S$. The correspondence
+is therefore not universal, and the exception is defensible on its own terms:
+disturbance, not absence of structure, is what defines the irregular class. Second, the bar and
 arm-count nodes appear only in the irregular rule, where they enter an
 exponential factor alongside roundedness. These are disc questions appearing
 outside the disc branch, and we do not claim a physical mechanism for it; the
@@ -826,8 +824,7 @@ tree.
 
 The recovery is therefore substantial and partial: the tree's branching order
 is reproduced where the classes are well populated, and it breaks down for the
-class defined by disturbance. That statement is weaker than the one in the
-submitted manuscript, and it is the one the evidence supports.
+class defined by disturbance.
 
 \paragraph{What the printed equations expose.}
 Two properties are visible in Appendix~\ref{app:rules} that no summary would
@@ -914,7 +911,7 @@ $\kappa$ equal to four decimal places ($\Delta\kappa = -0.00007$). On
 validation, the split on which the adopted rules were selected, it is behind by
 $0.007$ in accuracy and $0.012$ in $\kappa$. That the gap is visible on
 validation and absent on test is itself the signature of mild selection
-overfitting, exactly as the reviewer suspected. A practitioner who cares about
+overfitting. A practitioner who cares about
 accuracy or $\kappa$ should therefore take the $31$-node set: four nodes for
 E, seven for S0, eight for Sb, nine for Sc, and a single node each for Sa, Sd
 and Irr.
@@ -949,8 +946,9 @@ any application of this architecture to an imbalanced sample. We have not
 adopted it here because doing so requires refitting Stage 2 and would change
 every number in the paper.
 
-The conclusion we draw is narrower than the one the submitted version implied,
-and we state the trade rather than settle it. The $25$-node cap of
+The conclusion we draw is narrower than a simple complexity-budget argument
+would suggest, and we state the trade rather than settle it. The $25$-node cap
+of
 Section~\ref{sec:stage2} is not what limits performance, and the accuracy
 available to a symbolic head over this concept vocabulary is essentially
 exhausted by a handful of terms per class. A reader whose priority is legibility
