@@ -935,8 +935,8 @@ Section~\ref{sec:limitations} would lead one to expect from $49$ training
 examples. So the honest accounting is that the additional $122$ nodes buy a
 handful of correctly classified Sd galaxies and nothing else measurable.
 
-This is a weakness in our own Stage-2 selection statistic that the question
-exposed, and we report it as such. One-vs-rest cross-validated accuracy is
+This is a weakness in our own Stage-2 selection statistic, exposed by the
+ablation itself, and we report it as such. One-vs-rest cross-validated accuracy is
 close to degenerate for a class at $0.2\%$ prevalence, because the constant
 predictor is nearly optimal under it; the adopted rules escape the trap only
 because the full-complexity search happened to find expressions scoring
@@ -1266,9 +1266,8 @@ count is brought to nominal: coverage runs from $0.885$ for Sd to $0.917$ for
 Sc, against a $0.90$ target, and the worst per-class coverage rises from
 $0.083$ to $0.885$. The over-coverage of the dominant class disappears as it
 should---ellipticals fall from $0.982$ to $0.894$---confirming that the
-marginal guarantee had been financed by them. Marginal coverage is unaffected
-($0.889 \rightarrow 0.896$), so nothing is lost on the statistic the submitted
-version reported.
+marginal guarantee had been financed by them. Marginal coverage itself is
+unaffected ($0.889 \rightarrow 0.896$), so nothing is lost on that statistic.
 
 The price is severe. Mean prediction-set size rises from $1.46$ to $3.94$ of
 seven classes, and the fraction of galaxies receiving a singleton set falls
