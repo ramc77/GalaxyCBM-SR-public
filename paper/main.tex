@@ -858,6 +858,44 @@ The bar and arm-count entries for Irr are discussed in the text.}
 \input{tables/rule_tree_map}
 \end{table}
 
+\paragraph{Are the rules explanatory, or merely short?}
+Compactness and legibility are not the same property, and an expression can be
+sparse without being interpretable. We therefore state which of the seven
+rules we think are genuinely explanatory and which are not, so the reader can
+disagree with the assessment against the printed equations rather than take it
+on trust.
+
+Four read directly as morphological statements. Equation~\eqref{eq:rule_E} is
+the smooth vote suppressed by merger evidence; \eqref{eq:rule_S0} is a featured
+non-merging system with no arms and an elongated profile;
+\eqref{eq:rule_Sb} is a face-on featured disc with tightly wound arms, damped
+when a large bulge, an absence of arms or a merger signature is present; and
+\eqref{eq:rule_Sd} is the four-way product described above. In each case the
+sign and role of every term can be stated in a sentence.
+
+Three are less satisfactory. Equation~\eqref{eq:rule_Sa} has an interpretable
+numerator---large bulge, tight winding, face-on, featured---but divides it by
+$0.636 - v_{\rm B0}$, and we can offer no morphological reading of that
+denominator beyond its role as a steep monotone gain near the pole.
+Equation~\eqref{eq:rule_Sc} is a product of two squared factors, and squaring
+discards the sign of each, so the expression is legible term by term but its
+behaviour as a whole is not obvious by inspection. Equation~\eqref{eq:rule_Irr}
+is the weakest on this criterion: it is compact, at $25$ nodes, but it is the
+modulus of a product of two shifted exponential terms, and while one can see
+that it responds to merger votes and to clumpiness, its functional shape is not
+one a morphologist would have written down.
+
+We take this to be an honest limit on the interpretability claim rather than a
+refutation of it. Symbolic regression optimises for accuracy at a complexity
+budget, not for explanatory form, and nothing in the search rewards a rule for
+being a recognisable morphological statement. That four of seven nonetheless
+are is evidence that the concept layer carries genuine physical structure; that
+three are not is a reason to treat ``symbolic'' and ``interpretable'' as
+distinct properties, and to report which rules meet the stronger standard
+rather than claiming it for the set as a whole. Constraining the operator set,
+or penalising nested transcendental subexpressions, would push the search
+toward explanatory form and is the obvious next step.
+
 \paragraph{Is the adopted expression size justified?}
 Figure~\ref{fig:pareto} shows the PySR Pareto frontier per class together with
 the adopted expression. Every frontier rises steeply below roughly ten nodes
