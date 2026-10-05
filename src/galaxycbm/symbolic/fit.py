@@ -111,6 +111,15 @@ def evaluate_expression(expr, X: pd.DataFrame) -> np.ndarray:
 
 
 def _cv_accuracy(expr, X: pd.DataFrame, y_bin: np.ndarray, cv_splits) -> float:
+    """Mean fold accuracy of a FIXED expression at a FIXED 0.5 threshold.
+
+    Despite the name this is not a held-out estimate. The expression was found
+    by a search that had already seen every row of ``X``, and nothing is refitted
+    inside a fold, so the mean over folds is the pooled accuracy on the training
+    pool (exactly so when the folds are equal in size). It therefore cannot
+    detect overfitting by the search. See ``galaxycbm.symbolic.frontier`` for the
+    out-of-sample comparison, and ``tests/test_frontier.py`` for the identity.
+    """
     accs: list[float] = []
     for _, va in cv_splits:
         try:

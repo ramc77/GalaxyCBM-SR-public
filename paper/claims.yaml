@@ -55,3 +55,11 @@ claims:
     optional: true
   - path: stages.revision.compact_rules
     optional: true
+
+  # Out-of-sample check of the Stage-2 selection (scripts/run_frontier_validation.py).
+  - path: stages.symbolic.frontier_selection.max_abs_cv_minus_train
+  - path: stages.symbolic.frontier_selection.per_class
+  - path: stages.symbolic.frontier_selection.metrics.adopted.test.cohen_kappa
+  - path: stages.symbolic.frontier_selection.metrics.val_selected.test.cohen_kappa
+  - path: stages.symbolic.frontier_selection.metrics.val_selected.total_nodes
+  - path: stages.symbolic.frontier

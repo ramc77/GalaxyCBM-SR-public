@@ -325,6 +325,96 @@ def coverage_comparison(revision_dir: Path, out: Path) -> Path | None:
     return Path(out)
 
 
+def frontier_figure(frontier_csv: Path, rule_table_csv: Path, out: Path,
+                    cap: int = 25) -> Path | None:
+    """Training and validation accuracy along every class's Pareto frontier.
+
+    One panel per class so the two curves can be read against each other.
+    The validation split was never seen by the symbolic search, so a gap that
+    opens between the curves is overfitting by the search. The search limit is
+    drawn because a rule adopted at the limit says nothing about larger ones.
+
+    Returns None until ``scripts/run_frontier_validation.py`` has produced the
+    CSV, so ``build_all`` still works on a fresh clone.
+    """
+    import matplotlib.pyplot as plt
+    from matplotlib.lines import Line2D
+
+    frontier_csv, rule_table_csv = Path(frontier_csv), Path(rule_table_csv)
+    if not (frontier_csv.exists() and rule_table_csv.exists()):
+        return None
+    from galaxycbm.symbolic.frontier import select_on_split
+
+    tbl = pd.read_csv(frontier_csv)
+    adopted = pd.read_csv(rule_table_csv).set_index("hubble_class")["complexity"].to_dict()
+    order = [c for c in ("E", "S0", "Sa", "Sb", "Sc", "Sd", "Irr") if c in set(tbl["hubble_class"])]
+
+    apply_paper_style()
+    c_train, c_val = series_palette(2)
+    # 3 x 3 keeps the figure close to its printed size (two rows of four panels
+    # shrink the labels to about 6 pt at page width). The eighth cell holds the
+    # legend, so the bottom panels are those with no panel directly below them.
+    fig, axes = plt.subplots(3, 3, figsize=(7.2, 7.8))
+    flat = axes.ravel()
+
+    for ax, cls in zip(flat, order):
+        g = tbl[tbl["hubble_class"] == cls].sort_values("complexity")
+        ax.axvspan(cap, cap + 2.5, color="0.85", lw=0, zorder=0)
+        ax.plot(g["complexity"], g["train_acc"], "o-", color=c_train, ms=3, lw=1.3, zorder=2)
+        ax.plot(g["complexity"], g["val_acc"], "s--", color=c_val, ms=3, lw=1.3, zorder=3)
+        # +/- one binomial standard error on the validation accuracy: differences
+        # smaller than this are sampling noise, not evidence about generalisation.
+        if "n_val" in g.columns:
+            se = np.sqrt(g["val_acc"] * (1 - g["val_acc"]) / g["n_val"])
+            ax.fill_between(g["complexity"], g["val_acc"] - se, g["val_acc"] + se,
+                            color=c_val, alpha=0.18, lw=0, zorder=1)
+            lo, hi = (g["val_acc"] - se).min(), (g["val_acc"] + se).max()
+        else:
+            lo, hi = g["val_acc"].min(), g["val_acc"].max()
+        lo, hi = min(lo, g["train_acc"].min()), max(hi, g["train_acc"].max())
+        # Never magnify a flat frontier: every panel spans at least 0.06 in accuracy.
+        half = max(0.5 * (hi - lo) * 1.15, 0.03)
+        mid = 0.5 * (lo + hi)
+        top = min(mid + half, 1.0)
+        ax.set_ylim(top - 2 * half, top)
+
+        sel = select_on_split(g, "val").iloc[0]
+        ax.plot([sel["complexity"]], [sel["val_acc"]], "D", mfc="none", mec="k",
+                ms=8, mew=1.1, zorder=5)
+        a = int(adopted[cls])
+        row = g[g["complexity"] == a]
+        if len(row):
+            ax.plot([a], [row["val_acc"].iloc[0]], "*", color="k", ms=11, zorder=6)
+        ax.set_title(cls, fontsize=10)
+        ax.set_xlim(0, cap + 2.5)
+
+    n = len(order)
+    for i, ax in enumerate(flat[:n]):
+        has_panel_below = i + 3 < n
+        ax.tick_params(labelbottom=not has_panel_below)
+        if not has_panel_below:
+            ax.set_xlabel("complexity (nodes)")
+        if i % 3 == 0:
+            ax.set_ylabel("one-vs-rest accuracy")
+    for ax in flat[n + 1:]:
+        ax.axis("off")
+
+    handles = [
+        Line2D([], [], color=c_train, marker="o", ms=4, label="training pool"),
+        Line2D([], [], color=c_val, marker="s", ms=4, ls="--", label="validation (unseen by search)"),
+        plt.Rectangle((0, 0), 1, 1, color=c_val, alpha=0.18, label=r"validation $\pm1$ s.e."),
+        Line2D([], [], color="k", marker="*", ls="", ms=10, label="adopted rule"),
+        Line2D([], [], color="k", marker="D", mfc="none", ls="", ms=7, label="best on validation"),
+        plt.Rectangle((0, 0), 1, 1, color="0.85", label=f"beyond search limit ({cap} nodes)"),
+    ]
+    flat[n].axis("off")
+    flat[n].legend(handles=handles, loc="center", frameon=False, fontsize=8)
+    fig.tight_layout()
+    Path(out).parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(out); plt.close(fig)
+    return Path(out)
+
+
 def build_all(results_root: Path, paper_root: Path) -> list[Path]:
     figs_dir = Path(paper_root) / "figures"
     figs_dir.mkdir(parents=True, exist_ok=True)
@@ -332,6 +422,8 @@ def build_all(results_root: Path, paper_root: Path) -> list[Path]:
     for maker, args in [
         (rule_pareto,           (results_root / "symbolic" / "rule_table.csv", figs_dir / "pareto.pdf",
                                  results_root / "symbolic" / "fit_cache")),
+        (frontier_figure,       (results_root / "symbolic" / "frontier_accuracies.csv",
+                                 results_root / "symbolic" / "rule_table.csv", figs_dir / "pareto.pdf")),
         (confusion_matrix,      (results_root / "symbolic" / "metrics.json",   figs_dir / "confusion.pdf")),
         (coverage_and_selective,(results_root / "uncertainty",                 figs_dir / "selective_risk.pdf")),
         (robustness_shift,      (results_root / "tables" / "robustness.csv",   figs_dir / "robustness_shift.pdf")),

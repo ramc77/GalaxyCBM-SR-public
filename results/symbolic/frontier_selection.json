@@ -1,0 +1,419 @@
+{
+  "max_abs_cv_minus_train": 1.6024166216155322e-07,
+  "metrics": {
+    "adopted": {
+      "test": {
+        "accuracy": 0.7761316872427984,
+        "cohen_kappa": 0.5495404134545114,
+        "confusion_matrix": [
+          [
+            3732,
+            81,
+            155,
+            0,
+            56,
+            28,
+            0
+          ],
+          [
+            187,
+            96,
+            24,
+            0,
+            19,
+            18,
+            0
+          ],
+          [
+            254,
+            10,
+            312,
+            0,
+            44,
+            22,
+            1
+          ],
+          [
+            4,
+            0,
+            2,
+            0,
+            6,
+            0,
+            0
+          ],
+          [
+            97,
+            5,
+            35,
+            1,
+            408,
+            88,
+            2
+          ],
+          [
+            68,
+            7,
+            21,
+            0,
+            98,
+            165,
+            3
+          ],
+          [
+            6,
+            1,
+            2,
+            0,
+            0,
+            15,
+            2
+          ]
+        ],
+        "labels": [
+          "E",
+          "Irr",
+          "S0",
+          "Sa",
+          "Sb",
+          "Sc",
+          "Sd"
+        ],
+        "macro_f1": 0.4283704486643977,
+        "n": 6075,
+        "total_nodes": 153
+      },
+      "total_nodes": 153,
+      "val": {
+        "accuracy": 0.7871604938271605,
+        "cohen_kappa": 0.5709211666327354,
+        "confusion_matrix": [
+          [
+            3763,
+            55,
+            151,
+            0,
+            49,
+            33,
+            1
+          ],
+          [
+            170,
+            124,
+            20,
+            0,
+            21,
+            9,
+            0
+          ],
+          [
+            250,
+            12,
+            319,
+            1,
+            42,
+            16,
+            2
+          ],
+          [
+            5,
+            0,
+            2,
+            0,
+            4,
+            1,
+            0
+          ],
+          [
+            99,
+            4,
+            34,
+            1,
+            400,
+            97,
+            1
+          ],
+          [
+            68,
+            14,
+            23,
+            0,
+            84,
+            172,
+            2
+          ],
+          [
+            5,
+            0,
+            2,
+            0,
+            1,
+            14,
+            4
+          ]
+        ],
+        "labels": [
+          "E",
+          "Irr",
+          "S0",
+          "Sa",
+          "Sb",
+          "Sc",
+          "Sd"
+        ],
+        "macro_f1": 0.46211641313952734,
+        "n": 6075,
+        "total_nodes": 153
+      }
+    },
+    "val_selected": {
+      "test": {
+        "accuracy": 0.7751440329218107,
+        "cohen_kappa": 0.5459614426284616,
+        "confusion_matrix": [
+          [
+            3738,
+            82,
+            145,
+            0,
+            59,
+            28,
+            0
+          ],
+          [
+            189,
+            94,
+            23,
+            0,
+            20,
+            18,
+            0
+          ],
+          [
+            261,
+            12,
+            299,
+            0,
+            47,
+            23,
+            1
+          ],
+          [
+            4,
+            0,
+            2,
+            0,
+            6,
+            0,
+            0
+          ],
+          [
+            99,
+            5,
+            30,
+            0,
+            410,
+            92,
+            0
+          ],
+          [
+            70,
+            8,
+            18,
+            0,
+            97,
+            166,
+            3
+          ],
+          [
+            6,
+            1,
+            2,
+            0,
+            0,
+            15,
+            2
+          ]
+        ],
+        "labels": [
+          "E",
+          "Irr",
+          "S0",
+          "Sa",
+          "Sb",
+          "Sc",
+          "Sd"
+        ],
+        "macro_f1": 0.4266674149422188,
+        "n": 6075,
+        "total_nodes": 84
+      },
+      "total_nodes": 84,
+      "val": {
+        "accuracy": 0.7869958847736626,
+        "cohen_kappa": 0.568801834574435,
+        "confusion_matrix": [
+          [
+            3770,
+            55,
+            143,
+            0,
+            49,
+            35,
+            0
+          ],
+          [
+            169,
+            126,
+            19,
+            0,
+            21,
+            9,
+            0
+          ],
+          [
+            263,
+            13,
+            302,
+            0,
+            46,
+            16,
+            2
+          ],
+          [
+            5,
+            0,
+            2,
+            0,
+            4,
+            1,
+            0
+          ],
+          [
+            100,
+            5,
+            29,
+            0,
+            404,
+            98,
+            0
+          ],
+          [
+            70,
+            14,
+            19,
+            0,
+            84,
+            176,
+            0
+          ],
+          [
+            5,
+            0,
+            2,
+            0,
+            1,
+            15,
+            3
+          ]
+        ],
+        "labels": [
+          "E",
+          "Irr",
+          "S0",
+          "Sa",
+          "Sb",
+          "Sc",
+          "Sd"
+        ],
+        "macro_f1": 0.4577494470997331,
+        "n": 6075,
+        "total_nodes": 84
+      }
+    }
+  },
+  "n_test": 6075,
+  "n_train": 24299,
+  "n_val": 6075,
+  "note": "val_selected is chosen on the validation split, so its validation figures are optimistic; compare the two sets on test.",
+  "per_class": [
+    {
+      "adopted_complexity": 19,
+      "adopted_train_acc": 0.9012716572698465,
+      "adopted_val_acc": 0.8569547325102881,
+      "hubble_class": "E",
+      "same_expression": true,
+      "selected_complexity": 19,
+      "selected_train_acc": 0.9012716572698465,
+      "selected_val_acc": 0.8569547325102881,
+      "val_acc_se": 0.004492028951944133
+    },
+    {
+      "adopted_complexity": 25,
+      "adopted_train_acc": 0.9638256718383472,
+      "adopted_val_acc": 0.9506172839506173,
+      "hubble_class": "Irr",
+      "same_expression": false,
+      "selected_complexity": 12,
+      "selected_train_acc": 0.963043746656241,
+      "selected_val_acc": 0.9507818930041152,
+      "val_acc_se": 0.002775426706958738
+    },
+    {
+      "adopted_complexity": 22,
+      "adopted_train_acc": 0.9410263796864069,
+      "adopted_val_acc": 0.9111111111111111,
+      "hubble_class": "S0",
+      "same_expression": false,
+      "selected_complexity": 6,
+      "selected_train_acc": 0.934565208444792,
+      "selected_val_acc": 0.9124279835390946,
+      "val_acc_se": 0.0036266766156788986
+    },
+    {
+      "adopted_complexity": 22,
+      "adopted_train_acc": 0.9983126877649287,
+      "adopted_val_acc": 0.9980246913580247,
+      "hubble_class": "Sa",
+      "same_expression": false,
+      "selected_complexity": 1,
+      "selected_train_acc": 0.997983456109305,
+      "selected_val_acc": 0.9980246913580247,
+      "val_acc_se": 0.0005696590269942906
+    },
+    {
+      "adopted_complexity": 23,
+      "adopted_train_acc": 0.9636199020535825,
+      "adopted_val_acc": 0.9293827160493827,
+      "hubble_class": "Sb",
+      "same_expression": false,
+      "selected_complexity": 16,
+      "selected_train_acc": 0.9627556689575703,
+      "selected_val_acc": 0.9305349794238683,
+      "val_acc_se": 0.0032619424517355377
+    },
+    {
+      "adopted_complexity": 25,
+      "adopted_train_acc": 0.9696695337256678,
+      "adopted_val_acc": 0.9450205761316872,
+      "hubble_class": "Sc",
+      "same_expression": false,
+      "selected_complexity": 21,
+      "selected_train_acc": 0.9695049178978559,
+      "selected_val_acc": 0.945843621399177,
+      "val_acc_se": 0.0029037641317692033
+    },
+    {
+      "adopted_complexity": 17,
+      "adopted_train_acc": 0.9966665294868101,
+      "adopted_val_acc": 0.9960493827160494,
+      "hubble_class": "Sd",
+      "same_expression": false,
+      "selected_complexity": 9,
+      "selected_train_acc": 0.9962549899172806,
+      "selected_val_acc": 0.9962139917695473,
+      "val_acc_se": 0.0007879414626093993
+    }
+  ],
+  "threshold": 0.5
+}

@@ -56,6 +56,8 @@ def aggregate_metrics(root: Path = RESULTS_ROOT) -> dict[str, Any]:
             "symbolic":    _stage("symbolic",    str(root / "symbolic")) | {
                 "metrics": _read_json(root / "symbolic" / "metrics.json"),
                 "rules":   _read_csv_records(root / "symbolic" / "rule_table.csv"),
+                "frontier_selection": _read_json(root / "symbolic" / "frontier_selection.json"),
+                "frontier": _read_csv_records(root / "symbolic" / "frontier_accuracies.csv"),
             },
             "uncertainty": _stage("uncertainty", str(root / "uncertainty")) | {
                 "summary":            _read_json(root / "uncertainty" / "metrics.json"),

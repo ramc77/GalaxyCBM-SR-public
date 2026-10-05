@@ -11,7 +11,7 @@ CONFIG_DIR := configs
 .PHONY: help sync test lint clean \
         data.raw data.concepts data.labels \
         stage1 stage2 stage3 \
-        baselines robustness revision eval all
+        baselines robustness revision frontier eval all
 
 help:
 	@grep -E '^[a-zA-Z0-9._-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -63,6 +63,9 @@ baselines:  ## P7 — baselines + ablations
 
 robustness:  ## P8 — cross-survey shift experiments
 	$(PYTHON) scripts/run_robustness.py
+
+frontier:  ## Score every Pareto-front expression on the validation split (out of sample)
+	$(PYTHON) scripts/run_frontier_validation.py
 
 revision:  ## Class-conditional conformal calibration + compact-rule ablation
 	$(PYTHON) scripts/run_revision.py

@@ -146,12 +146,13 @@ layer with compact analytic expressions discovered by symbolic
 regression~\citep{cranmer2023}. The deployed classifier is then a table of
 seven equations that an astronomer can read, not a weight matrix over concepts.
 Symbolic regression has been applied to astronomical classification boundaries,
-notably in star--galaxy--quasar
-separation~\citep{deshpande2026,llorella2025}, where compact analytic
-functions of photometric colours recover competitive accuracy. Here the
-symbolic model operates one level higher: its inputs are not raw observables
-but predicted physical concepts, and the expression it recovers constitutes
-the classifier itself rather than a summary of one.
+notably in star--galaxy--quasar separation, where a compact expression of the
+spectroscopic redshift alone, cut at two thresholds into three classes, reaches
+a Cohen's $\kappa$ of $0.81$~\citep{llorella2025} and up to
+$0.89$~\citep{deshpande2026}. The present model differs in both its input and
+its output: it takes predicted physical concepts rather than a single raw
+observable, and it returns one rule for each morphological type rather than one
+score cut at thresholds.
 
 \emph{Calibrated set-valued prediction.} Interpretability does not confer
 reliability: a legible rule can be confidently wrong. We wrap the symbolic
@@ -333,9 +334,9 @@ weights are then further trained on the task at hand rather than learned from
 scratch. \\
 Early stopping & Halting training when performance on a held-out split stops
 improving, to avoid fitting noise in the training set. \\
-Cross-validation & Repeatedly refitting on part of the data and scoring on the
-part held out, so that a selection is made on data the candidate has not
-seen. \\
+Validation split & A part of the data kept out of both the fitting and the
+selection of a model, so that accuracy measured there describes galaxies the
+model has not seen. \\
 One-vs-rest & Reducing a seven-class problem to seven binary problems, each
 asking ``is this galaxy of type $k$ or not''. \\
 Pareto front & The set of candidate expressions for which no other candidate
@@ -393,16 +394,19 @@ Emit predicted concept vectors $\hat c_i$ for \emph{all} splits\;
 \vspace{2pt}
 \textbf{Stage 2 --- symbolic head} \tcp*{consumes $\hat c$, never $c$}
 \For{each class $k \in \{1,\dots,K\}$}{
-  Form binary target $z_i = \mathbb{1}[y_i = k]$ on $\mathcal{D}_{\rm tr}$\;
+  Form the binary target on $\mathcal{D}_{\rm tr}$: $z_i = 1$ if $y_i = k$, else
+  $z_i = 0$\;
   Run symbolic regression on $(\hat c, z)$ under a complexity budget,
   obtaining a Pareto front $\mathcal{P}_k$ of (expression, complexity) pairs\;
   \For{each candidate $g \in \mathcal{P}_k$}{
-    Score $g$ by $R$-fold stratified cross-validated accuracy on held-out
-    folds of $\mathcal{D}_{\rm tr}$\;
+    Score $g$ by its one-vs-rest accuracy on $\mathcal{D}_{\rm tr}$, calling
+    a galaxy of type $k$ when $g > 0.5$ (nothing is refitted)\;
   }
-  $g_k \leftarrow$ candidate maximising CV accuracy, ties broken toward
-  lower complexity\;
+  $g_k \leftarrow$ candidate with the highest training accuracy, ties broken
+  toward lower complexity\;
 }
+Score every candidate in the same way on $\mathcal{D}_{\rm val}$, which the
+search never saw, and compare the rule set selected there with $\{g_k\}$\;
 Predict $\hat y(\hat c) = \arg\max_k g_k(\hat c)$\;
 \vspace{2pt}
 \textbf{Stage 3 --- conformal calibration}\;
@@ -521,10 +525,16 @@ truth. This is the property that makes the pipeline interpretable end to end:
 at inference no privileged information exists anywhere between pixels and
 label, so the rule set is a complete description of the deployed decision.
 
-For each Hubble class $k$ we fit one symbolic regression against the binary
-one-vs-rest indicator $z = \mathbb{1}[y = k]$, following the formulation used
-for symbolic star--galaxy--quasar
-separation~\citep{deshpande2026}. Symbolic regression searches the space of
+For each Hubble class $k$ we fit one symbolic regression against a binary
+one-vs-rest target $z$, defined from the true Hubble type $y$ of each galaxy by
+$z = 1$ if $y = k$ and $z = 0$ otherwise. This one-vs-rest design is a choice
+of the present work. The star--galaxy--quasar studies cited above instead fit a
+single score to an ordinal encoding of the class and cut it at two
+thresholds~\citep{llorella2025,deshpande2026}. We did not adopt that design
+because a single ordinal score would place the irregular class, which is defined
+by disturbance rather than by position along the Hubble sequence, at one end of
+a scale, and because one rule per type lets each morphology be read on its own;
+we have not compared the two designs. Symbolic regression searches the space of
 closed-form algebraic expressions directly: it returns a formula, not a set of
 weights for a fixed functional form. The result is seven scalar functions
 $g_k(\hat c)$ of the concept variables, and the predicted type is
@@ -544,12 +554,17 @@ adopted expressions are given in full in Appendix~\ref{app:rules}; they are
 the deployed model, not a summary of it.
 
 Symbolic regression returns a Pareto front trading training loss against
-complexity; selecting by training loss overfits, and selecting by PySR's
-internal score conflates the two objectives. We instead re-score every
-frontier point by five-fold stratified cross-validation on held-out folds of
-the training pool and select the expression with the highest cross-validated
-accuracy, breaking ties toward lower complexity. Predicted class is the
-$\arg\max$ over the seven per-class scores.
+complexity. We score every frontier point by its one-vs-rest accuracy on the
+training pool, calling a galaxy of type $k$ when the expression exceeds $0.5$,
+and adopt for each class the expression with the highest score, breaking ties
+toward lower complexity. Predicted class is the $\arg\max$ over the seven
+per-class scores. This score is an in-sample accuracy: the search has already
+seen every galaxy it is computed on, and nothing is refitted when computing it.
+It cannot by itself reveal overfitting by the search, and because in-sample
+accuracy tends to rise with complexity it favours the largest expressions on a
+nearly flat frontier. Section~\ref{sec:rules} therefore also scores every
+frontier expression on the validation split, which the search never saw, and
+compares the rule set selected there with the adopted one.
 
 Rules are exported as \LaTeX, as plain text, and as an importable Python
 module which Stage 3 and the cross-survey evaluation both consume directly.
@@ -645,7 +660,7 @@ Applying a trained model to a new survey tests only whether its \emph{answers}
 survive. To test whether its \emph{reasoning} survives we need a second object
 to compare against, so we perform a \emph{symbolic refit}: the entire Stage-2
 procedure --- the same PySR settings, the same complexity budget, the same
-cross-validated selection --- is run again from scratch on the shifted survey,
+selection rule --- is run again from scratch on the shifted survey,
 using that survey's own predicted concepts and labels. This yields a second,
 independently discovered rule set for the same classification task. If the
 task is instrument-independent, the two rule sets should invoke the same
@@ -676,7 +691,7 @@ J = \frac{1}{K}\sum_{k=1}^{K}
 \label{eq:jaccard}
 \end{equation}
 together with the Jaccard index of the five globally most-used concept
-variables, where each variable is weighted by the cross-validated accuracy of
+variables, where each variable is weighted by the training-pool accuracy of
 the rules invoking it so that the ranking is not dominated by a term appearing
 once in a weak rule. The per-class index measures whether each individual
 rule is rebuilt from the same ingredients; the top-five index measures whether
@@ -893,37 +908,73 @@ rather than claiming it for the set as a whole. Constraining the operator set,
 or penalising nested transcendental subexpressions, would push the search
 toward explanatory form and is the obvious next step.
 
+\paragraph{Was the adopted expression chosen on data the search had seen?}
+For each class, Stage~2 adopts the frontier expression with the highest
+one-vs-rest accuracy on the training pool (Section~\ref{sec:stage2}). That score
+is an in-sample accuracy. The search had already seen every galaxy it is
+computed on and nothing is refitted when computing it, so it cannot by itself
+show whether the search has overfitted; recomputing it from scratch reproduces
+the stored values to within $1.6\times10^{-7}$ over all $140$ frontier
+expressions. Because in-sample accuracy tends to rise with complexity, it also
+favours the largest expressions on a nearly flat frontier. We therefore score
+every frontier expression on the validation split, which the search never saw
+(Figure~\ref{fig:pareto}).
+
+Validation accuracy sits below training accuracy for the five classes with
+enough galaxies to measure it: by $0.044$ for E, $0.030$ for S0,
+$0.034$ for Sb, $0.025$ for Sc and $0.013$ for Irr
+(Table~\ref{tab:rules}); Sa and Sd show no gap, as expected for classes whose
+accuracy is set by their prevalence. The symbolic search does not generate most
+of this gap. The one-node expression for E is the single concept variable
+\code{smooth\_or\_featured\_\_smooth} compared with $0.5$, and for Irr the single
+variable \code{merging\_\_merger}; nothing is fitted in either, yet they already
+show gaps of $0.038$ and $0.013$. This is what one expects if the
+concept values are more accurate on the training galaxies, to which Stage~1 was
+fitted, than on unseen galaxies; we have not isolated that cause. The part of
+the gap that grows with complexity is small: between expressions of $4$--$8$ nodes
+and of $16$--$25$ nodes it increases by $0.006$ for S0 and by $0.005$ for
+Sb and Sc, and not at all for E and Irr, which is comparable to the
+$0.003$--$0.004$ sampling error of a single validation accuracy.
+
+Selecting on the validation split gives a smaller rule set: $84$ nodes against
+$153$, with E unchanged and Irr, S0, Sa, Sb, Sc and Sd at $12$, $6$, $1$, $16$, $21$
+and $9$ nodes. For the classes whose rule changes, its validation accuracy exceeds
+that of the adopted rule by at most $0.0013$ (for Sa the two tie exactly), below
+the sampling error, and on the held-out test split the two sets are
+indistinguishable: accuracy $0.775$ against $0.776$, macro-$F_1$
+$0.427$ against $0.428$ and $\kappa = 0.546$ against
+$0.550$ (Table~\ref{tab:compact}). Selecting on unseen data therefore changes the
+size of the rule set but not what it can do. We retain the adopted rules, which
+were fixed before this comparison and on which every later result rests, and
+report the validation-selected set as the out-of-sample check on them.
+
 \paragraph{Is the adopted expression size justified?}
-Figure~\ref{fig:pareto} shows the PySR Pareto frontier per class together with
-the adopted expression. Every frontier rises steeply below roughly ten nodes
-and is close to flat thereafter, which invites the objection that the adopted
-17--25 node expressions are avoidable complexity, or that the
-cross-validated selection has mildly overfitted the frontier. We test this
-directly. From each frontier we take the \emph{smallest} expression whose
-cross-validated accuracy is within $0.005$ of the class best, assemble those
-seven into an alternative rule set, and evaluate it end to end on the same
-splits. The comparison is reported in Table~\ref{tab:compact}.
+Every frontier rises steeply below roughly ten nodes and is close to flat
+thereafter, which invites the objection that the adopted $17$--$25$ node
+expressions are avoidable complexity. The validation-selected set above answers
+it in part. We test it further by taking, from each frontier, the
+\emph{smallest} expression whose training-pool accuracy is within $0.005$ of the
+class best, assembling those seven into a compact rule set, and evaluating it
+end to end on the same splits (Table~\ref{tab:compact}).
 
 On the aggregate metrics the objection is largely upheld. The compact set uses
 $31$ nodes against $153$, a reduction of $80\%$, and on the test split it is
 indistinguishable from the adopted set: accuracy $0.776$ against $0.776$ and
 $\kappa$ equal to four decimal places ($\Delta\kappa = -0.00007$). On
-validation, the split on which the adopted rules were selected, it is behind by
-$0.007$ in accuracy and $0.012$ in $\kappa$. That the gap is visible on
-validation and absent on test is itself the signature of mild selection
-overfitting. A practitioner who cares about
-accuracy or $\kappa$ should therefore take the $31$-node set: four nodes for
-E, seven for S0, eight for Sb, nine for Sc, and a single node each for Sa, Sd
-and Irr.
+validation it is behind by $0.007$ in accuracy and $0.012$ in $\kappa$; with a
+sampling error of about $0.005$ in accuracy the two splits do not disagree
+beyond noise. A practitioner who cares about accuracy or $\kappa$ should
+therefore take a smaller set: for the compact one, four nodes for E, seven for
+S0, eight for Sb, nine for Sc, and a single node each for Sa, Sd and Irr.
 
 The macro-$F_1$ column tells a different story. Macro-$F_1$ falls from $0.462$
 to $0.421$ on validation, and inspection of the compact rules explains why. The
-cross-validated one-vs-rest criterion selects a bare \emph{constant} for both
-Sa ($0.00203$) and Sd ($0.00428$). A constant is a legitimate point on the
-frontier and scores $0.998$ one-vs-rest accuracy on a class present in $0.2\%$
-of objects, simply by never predicting it---but a rule that never fires removes
-its class from the model's output entirely. The compact classifier predicts Sa
-and Sd for no galaxy in either split.
+within-tolerance criterion on one-vs-rest accuracy selects a bare \emph{constant}
+for both Sa ($0.00203$) and Sd ($0.00428$). A constant is a legitimate point on
+the frontier and scores $0.998$ one-vs-rest accuracy on a class present in
+$0.2\%$ of objects, simply by never predicting it---but a rule that never fires
+removes its class from the model's output entirely. The compact classifier
+predicts Sa and Sd for no galaxy in either split.
 
 The gap is almost entirely one class, and it is worth being precise about how
 small it is. The adopted rules recover Sd at $F_1 = 0.222$ on validation and
@@ -935,29 +986,33 @@ Section~\ref{sec:limitations} would lead one to expect from $49$ training
 examples. So the honest accounting is that the additional $122$ nodes buy a
 handful of correctly classified Sd galaxies and nothing else measurable.
 
-This is a weakness in our own Stage-2 selection statistic, exposed by the
-ablation itself, and we report it as such. One-vs-rest cross-validated accuracy is
-close to degenerate for a class at $0.2\%$ prevalence, because the constant
-predictor is nearly optimal under it; the adopted rules escape the trap only
-because the full-complexity search happened to find expressions scoring
-marginally higher. A class-balanced selection statistic---balanced accuracy or
-one-vs-rest $F_1$---would be the principled correction, and we recommend it for
-any application of this architecture to an imbalanced sample. We have not
-adopted it here because doing so requires refitting Stage 2 and would change
-every number in the paper.
+This is a weakness of the Stage-2 selection statistic, exposed by the
+ablation itself, and we report it as such. One-vs-rest accuracy is close to
+degenerate for a class at $0.2\%$ prevalence, because the constant predictor is
+nearly optimal under it; the adopted rules escape the trap only because the
+search happened to find expressions scoring marginally higher on the training
+pool ($0.9983$ against $0.9980$ for Sa). On validation the two tie exactly, and
+selecting on validation returns the constant for Sa. A class-balanced selection
+statistic---balanced accuracy or one-vs-rest $F_1$---would be the principled
+correction, and we recommend it for any application of this architecture to an
+imbalanced sample. We have not adopted it here because doing so requires
+refitting Stage 2 and would change every number in the paper.
 
 The conclusion we draw is narrower than a simple complexity-budget argument
-would suggest, and we state the trade rather than settle it. The $25$-node cap
-of
-Section~\ref{sec:stage2} is not what limits performance, and the accuracy
-available to a symbolic head over this concept vocabulary is essentially
-exhausted by a handful of terms per class. A reader whose priority is legibility
-should take the $31$-node set, and we would not argue against that choice: it
-costs nothing in accuracy or $\kappa$ and it is five times smaller. We retain
-the longer expressions because a classifier that silently drops a Hubble type is
-a different object from one that predicts it badly, and because the compact
-set's route to parity---deleting the classes it cannot model---is the behaviour
-this paper is written to make visible. Both rule sets are released so the choice
+would suggest, and we state the trade rather than settle it. Within the range
+searched the frontier is flat: over the last ten nodes before each frontier ends
+it gains at most $0.0010$ of training accuracy and nothing detectable on
+validation (changes between $-0.0005$ and $+0.0005$). The search was capped at
+$25$ nodes, however, and six of the seven frontiers reach that cap, including
+those of Sc and Irr, whose adopted rules sit at it. Flatness up to the cap does
+not show that larger expressions would not help, and we make no claim beyond the
+range searched. A reader whose priority is legibility should take a smaller
+set, and we would not argue against that choice: the compact set costs nothing
+in accuracy or $\kappa$ and is five times smaller. We retain the longer
+expressions because a classifier that silently drops a Hubble type is a
+different object from one that predicts it badly, and because the compact set's
+route to parity---deleting the classes it cannot model---is the behaviour this
+paper is written to make visible. All three rule sets are released so the choice
 need not be taken on our authority.
 
 \paragraph{Classification performance.}
@@ -972,38 +1027,41 @@ labels themselves are least certain.
 \begin{table}[htbp]
 \centering
 \caption{Stage-2 symbolic decision head: the complete deployed classifier.
-Predicted class is $\arg\max_k g_k$. CV accuracy is five-fold stratified
-one-vs-rest accuracy on held-out training folds; for the rarest classes it is
-inflated by class prior and is not a measure of discriminative power. This
-table is a summary; the expressions themselves are given in
-Appendix~\ref{app:rules} and released in machine-readable form.}
+Predicted class is $\arg\max_k g_k$. Train and Val.\ are the one-vs-rest
+accuracy at a threshold of $0.5$ on the training pool, on which each rule was
+selected, and on the validation split, which the search never saw. For the
+rarest classes both are inflated by class prior and neither measures
+discriminative power. This table is a summary; the expressions themselves are
+given in Appendix~\ref{app:rules} and released in machine-readable form.}
 \label{tab:rules}
 \footnotesize
 \setlength{\tabcolsep}{4pt}
-\begin{tabular}{llrr}
+\begin{tabular}{llrrr}
 \toprule
-Class & Dominant concepts & Nodes & CV acc. \\
+Class & Dominant concepts & Nodes & Train & Val. \\
 \midrule
-E   & smooth, merger, cigar        & 19 & 0.901 \\
-Irr & merger, disturbance          & 25 & 0.964 \\
-S0  & featured, no arms, cigar     & 22 & 0.941 \\
-Sa  & bulge, tight winding         & 22 & 0.998 \\
-Sb  & tight winding, edge-on       & 23 & 0.964 \\
-Sc  & bulge, loose winding         & 25 & 0.970 \\
-Sd  & no bulge, featured, merger   & 17 & 0.997 \\
+E   & smooth, merger, cigar        & 19 & 0.901 & 0.857 \\
+Irr & merger, disturbance          & 25 & 0.964 & 0.951 \\
+S0  & featured, no arms, cigar     & 22 & 0.941 & 0.911 \\
+Sa  & bulge, tight winding         & 22 & 0.998 & 0.998 \\
+Sb  & tight winding, edge-on       & 23 & 0.964 & 0.929 \\
+Sc  & bulge, loose winding         & 25 & 0.970 & 0.945 \\
+Sd  & no bulge, featured, merger   & 17 & 0.997 & 0.996 \\
 \midrule
-\textbf{Total} & & \textbf{153} & \\
+\textbf{Total} & & \textbf{153} & & \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{table}[htbp]
 \centering
-\caption{Compact-rule ablation. ``Compact'' replaces each adopted expression
-with the smallest expression on the same Pareto front whose cross-validated
-accuracy is within $0.005$ of the class best, then evaluates the seven
-together on identical splits. On accuracy and $\kappa$ the two are
-indistinguishable on test at a fifth of the size. The macro-$F_1$ gap is
+\caption{Compact-rule ablation and out-of-sample selection. ``Compact''
+replaces each adopted expression with the smallest expression on the same
+Pareto front whose training-pool accuracy is within $0.005$ of the class best.
+``Selected on validation'' takes, for each class, the frontier expression with
+the highest validation accuracy. Each set is evaluated on identical splits. On
+accuracy and $\kappa$ all three are indistinguishable on test, at a fifth and at
+roughly half of the size. The macro-$F_1$ gap is
 diagnostic: the compact selection returns a bare constant for Sa and Sd, so
 those classes are never predicted at all. The gap is almost entirely Sd, which
 the adopted set recovers at $F_1 = 0.222$ (validation) and $0.118$ (test); Sa
@@ -1017,10 +1075,12 @@ is recovered by neither set.}
 \cmidrule(lr){3-5}\cmidrule(lr){7-9}
 Rule set & Nodes & Acc. & $F_1$ & \kappastat & & Acc. & $F_1$ & \kappastat \\
 \midrule
-Adopted (CV-selected)       & 153 & \textbf{0.787} & \textbf{0.462} & \textbf{0.571} & & 0.776 & \textbf{0.428} & 0.550 \\
-Compact (within $0.005$ CV) &  31 & 0.781 & 0.421 & 0.559 & & 0.776 & 0.411 & 0.549 \\
+Adopted (training-pool selection) & 153 & \textbf{0.787} & \textbf{0.462} & \textbf{0.571} & & 0.776 & \textbf{0.428} & 0.550 \\
+Compact (within $0.005$ of best) &  31 & 0.781 & 0.421 & 0.559 & & 0.776 & 0.411 & 0.549 \\
+Selected on validation$^{\dagger}$ & 84 & 0.787 & 0.458 & 0.569 & & 0.775 & 0.427 & 0.546 \\
 \midrule
 $\Delta$ (compact $-$ adopted) & $-122$ & $-0.007$ & $-0.041$ & $-0.012$ & & $-0.000$ & $-0.018$ & $-0.000$ \\
+$\Delta$ (validation-selected $-$ adopted) & $-69$ & $-0.000$ & $-0.004$ & $-0.002$ & & $-0.001$ & $-0.002$ & $-0.004$ \\
 \bottomrule
 \end{tabular}
 \\[3pt]
@@ -1028,7 +1088,10 @@ $\Delta$ (compact $-$ adopted) & $-122$ & $-0.007$ & $-0.041$ & $-0.012$ & & $-0
 E $4$, S0 $7$, Sa $1$, Sb $8$, Sc $9$, Sd $1$, Irr $1$ nodes. The single-node
 rules for Sa and Sd are constants, and the Irr rule reduces to the merger vote
 fraction alone. Classes never predicted: none for the adopted set,
-$\{$Sa, Sd$\}$ for the compact set, on both splits.}
+$\{$Sa, Sd$\}$ for the compact set, on both splits. Validation-selected sizes:
+E $19$, S0 $6$, Sa $1$, Sb $16$, Sc $21$, Sd $9$, Irr $12$ nodes. $^{\dagger}$ Chosen on
+the validation split, so its validation columns are optimistic; compare the sets
+on test.}
 \end{table}
 
 \begin{figure}[htbp]
@@ -1045,10 +1108,13 @@ $n=12$.}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\columnwidth]{figures/pareto.pdf}
-\caption{Accuracy--complexity Pareto front per class. Markers indicate the
-cross-validation-selected expression adopted for each class. The selected
-rules occupy 17--25 nodes; expressions beyond this budget gained no
-cross-validated accuracy.}
+\caption{One-vs-rest accuracy along each class's PySR Pareto frontier, on the
+training pool (circles) and on the validation split (squares), which the
+search never saw; the shaded band is $\pm1$ binomial standard error on the
+validation accuracy. Stars mark the adopted rules and diamonds the expression
+with the highest validation accuracy (the same expression for E). The grey band
+lies beyond the $25$-node search limit: six of the seven frontiers reach it, so
+the figure says nothing about larger expressions.}
 \label{fig:pareto}
 \end{figure}
 
@@ -1129,7 +1195,7 @@ symbolic versus dense head costs nothing further.}
 
 A concept-importance ranking is only useful if it is stable across reasonable
 modelling choices. We compare the symbolic head's concept usage---each concept
-weighted by the cross-validated accuracy of the rules invoking it---against the
+weighted by the training-pool accuracy of the rules invoking it---against the
 linear head's coefficient magnitudes and against gradient-boosted-tree feature
 importances, over the twenty concept variables the symbolic rule set actually
 references (Appendix~\ref{app:rules}), which are the variables on which all
@@ -1532,7 +1598,7 @@ We state the constraints on these results explicitly.
 \emph{Class imbalance dominates the aggregate metrics.} With 49 Sa and 104 Sd
 training examples, no conclusion about these classes is supported by these
 data. Macro-$F_1$ of $0.462$ against accuracy of $0.787$ is a direct
-consequence, and the high one-vs-rest CV accuracies in
+consequence, and the high one-vs-rest accuracies in
 Table~\ref{tab:rules} for rare classes reflect class prior, not discrimination.
 
 \emph{Interpretability costs accuracy here.} The unconstrained network leads
@@ -1578,13 +1644,30 @@ other result in the paper.
 
 \emph{The Stage-2 selection statistic is degenerate for the rarest classes.}
 The compact-rule ablation (Section~\ref{sec:rules}) showed that one-vs-rest
-cross-validated accuracy selects a bare constant for Sa and Sd whenever a
-constant is on the frontier, because a rule that never fires is right $99.8\%$
-of the time on a class at $0.2\%$ prevalence. The adopted rules avoid this
-outcome, but by a small margin rather than by construction. A class-balanced
+accuracy selects a bare constant for Sa and Sd whenever a constant is on the
+frontier, because a rule that never fires is right $99.8\%$ of the time on a
+class at $0.2\%$ prevalence. Selecting on validation does the same for Sa. The
+adopted rules avoid this outcome, but by a small margin rather than by
+construction. A class-balanced
 selection statistic is the principled fix; applying it requires refitting
 Stage 2 and would change every number reported here, so we identify the
 problem rather than correct it.
+
+\emph{The adopted rules were selected on in-sample accuracy.} The score that
+chose them cannot reveal overfitting by the search (Section~\ref{sec:rules}).
+Scoring every frontier expression on the validation split finds no cost in
+held-out performance, but training-pool accuracies exceed validation accuracies
+by up to $0.044$ in Table~\ref{tab:rules}. The gap is already present for one-node
+rules, so the search does not produce it; we attribute it to the concept inputs
+being more accurate on the galaxies Stage~1 was fitted to, which we did not
+test. Fitting Stage~2 on out-of-fold concept predictions would be the cleaner
+design.
+
+\emph{The symbolic search was capped at $25$ nodes.} Six of the seven
+frontiers reach the cap, and the Sc and Irr rules are adopted at it. The
+frontiers are flat up to the cap (at most $0.0010$ of training accuracy over
+the last ten nodes), but a search with a larger limit was not run, so we cannot
+say whether larger expressions would improve any class.
 
 \emph{The compact-rule ablation searches only the cached frontiers.} It asks
 whether a shorter expression \emph{already discovered} by the search performs
@@ -1639,12 +1722,14 @@ not, because the shortfall is in the calibration budget rather than in the
 wrapper. Conditional validity additionally requires at least
 $\lceil 1/\alpha \rceil - 1$ calibration objects per class, which should govern
 how calibration splits are allocated.
-\item The adopted $153$-node rule set can be replaced by a $31$-node one with
-no measurable loss in accuracy or $\kappa$ on test. What the extra nodes buy is
+\item The adopted $153$-node rule set can be replaced by a $31$-node one, or by an
+$84$-node one selected on held-out validation accuracy, with no measurable loss
+in accuracy or $\kappa$ on test ($\kappa = 0.549$ and $0.546$ against
+$0.550$). What the extra nodes buy is
 macro-$F_1$: the compact selection returns a constant for the two rarest
 classes, which then disappear from the model's output entirely, whereas the
 adopted set still recovers a handful of Sd galaxies. Neither set recovers Sa.
-One-vs-rest cross-validated accuracy is a degenerate selection criterion at
+One-vs-rest accuracy is a degenerate selection criterion at
 $0.2\%$ prevalence, and class-balanced selection should be preferred.
 \item Under DECaLS $\rightarrow$ Euclid transfer, accuracy is preserved while
 calibration degrades and symbolic refits recover under half the reference
@@ -1748,8 +1833,8 @@ the search.
 
 \noindent
 Complexities are $19$ (E), $22$ (S0), $22$ (Sa), $23$ (Sb), $25$ (Sc), $17$
-(Sd) and $25$ (Irr), totalling $153$ nodes; the cross-validated one-vs-rest
-accuracies are those listed in Table~\ref{tab:rules}. For the two rarest
+(Sd) and $25$ (Irr), totalling $153$ nodes; the training-pool and validation
+one-vs-rest accuracies are those listed in Table~\ref{tab:rules}. For the two rarest
 classes, Sa and Sd, those accuracies are inflated by the class prior and
 should not be read as discriminative power.
 
