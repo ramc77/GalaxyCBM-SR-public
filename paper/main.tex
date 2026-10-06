@@ -146,13 +146,13 @@ layer with compact analytic expressions discovered by symbolic
 regression~\citep{cranmer2023}. The deployed classifier is then a table of
 seven equations that an astronomer can read, not a weight matrix over concepts.
 Symbolic regression has been applied to astronomical classification boundaries,
-notably in star--galaxy--quasar separation, where a compact expression of the
-spectroscopic redshift alone, cut at two thresholds into three classes, reaches
-a Cohen's $\kappa$ of $0.81$~\citep{llorella2025} and up to
-$0.89$~\citep{deshpande2026}. The present model differs in both its input and
-its output: it takes predicted physical concepts rather than a single raw
-observable, and it returns one rule for each morphological type rather than one
-score cut at thresholds.
+notably in star--galaxy--quasar separation, where a single compact expression
+reaches a Cohen's $\kappa$ of $0.81$~\citep{llorella2025}, and a score computed
+from the spectroscopic redshift alone, cut at two thresholds into three
+classes, reaches $0.89$ on a held-out set~\citep{deshpande2026}. The present
+model differs in both its input and its output: it takes predicted physical
+concepts rather than catalogue quantities, and it returns one rule for each
+morphological type rather than a single score cut at thresholds.
 
 \emph{Calibrated set-valued prediction.} Interpretability does not confer
 reliability: a legible rule can be confidently wrong. We wrap the symbolic
@@ -528,10 +528,11 @@ label, so the rule set is a complete description of the deployed decision.
 For each Hubble class $k$ we fit one symbolic regression against a binary
 one-vs-rest target $z$, defined from the true Hubble type $y$ of each galaxy by
 $z = 1$ if $y = k$ and $z = 0$ otherwise. This one-vs-rest design is a choice
-of the present work. The star--galaxy--quasar studies cited above instead fit a
-single score to an ordinal encoding of the class and cut it at two
-thresholds~\citep{llorella2025,deshpande2026}. We did not adopt that design
-because a single ordinal score would place the irregular class, which is defined
+of the present work. \citet{deshpande2026} instead fit a single score to an
+ordinal encoding of the class and cut it at two thresholds, and
+\citet{llorella2025} fit a single expression to all three classes; neither uses
+one target per class. We did not adopt a single-score design because a single
+ordinal score would place the irregular class, which is defined
 by disturbance rather than by position along the Hubble sequence, at one end of
 a scale, and because one rule per type lets each morphology be read on its own;
 we have not compared the two designs. Symbolic regression searches the space of
@@ -1747,10 +1748,7 @@ can be measured for any morphology pipeline.
 \label{sec:availability}
 
 All code, configurations, random seeds and derived results are available at
-\url{https://github.com/ramc77/GalaxyCBM-SR-public}. The pipeline reproduces from a
-single \code{make all}; every number quoted in this paper is written to
-\code{results/metrics.json} by the evaluation stage and verified against a
-manifest of paper claims at build time. Galaxy Zoo Evo, Euclid Q1 and
+\url{https://github.com/ramc77/GalaxyCBM-SR-public}. Galaxy Zoo Evo, Euclid Q1 and
 Galaxy Zoo JWST data are public
 \citep{walmsley2025gzevo,euclid2025morphology}.
 
