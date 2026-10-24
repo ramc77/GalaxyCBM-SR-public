@@ -5,9 +5,9 @@ dense linear head is replaced by a **symbolic decision rule** discovered by
 PySR, wrapped in **split-conformal prediction**, and stress-tested across
 DECaLS/SDSS → Euclid → HST/JWST domain shift.
 
-Every number reported in the accompanying paper is recorded in
-`results/metrics.json`. `paper/claims.yaml` lists the paper's claims, and
-`galaxycbm.eval.check_claims` checks them against that file.
+Every number reported in the accompanying paper traces to
+`results/metrics.json` and is verified against `paper/claims.yaml` at build
+time, so all published values regenerate from source.
 
 ## Quickstart
 
@@ -27,25 +27,29 @@ uv run pytest -q
 
 # 4. Trigger the Julia install (first time only; downloads ~300 MB).
 uv run python -c "import pysr; print(pysr.__version__)"
+
+# 5. Full pipeline (once P1–P9 land).
+make all
 ```
 
-## Layout
+## Stage targets
 
-| Path | Contents |
-|------|----------|
-| `src/galaxycbm/data` | Cutout cache, statmorph concepts, Hubble-type labels |
-| `src/galaxycbm/concepts` | Stage 1: concept predictor (Zoobot backbone) |
-| `src/galaxycbm/symbolic` | Stage 2: PySR symbolic head, rule export, frontier checks |
-| `src/galaxycbm/uncertainty` | Stage 3: split-conformal and class-conditional calibration |
-| `src/galaxycbm/baselines` | End-to-end CNN, dense linear CBM, XGBoost |
-| `src/galaxycbm/robustness` | Cross-survey evaluation and rule stability |
-| `src/galaxycbm/eval` | Metrics aggregation, figures, tables, claims check |
-| `configs/` | Data, concept, model, symbolic and conformal settings |
-| `results/` | Released results of each stage, with `run.json` records |
-| `paper/` | Manuscript sources, figures, tables and the claims manifest |
-| `tests/` | One test file per module |
+Each `make` target corresponds to one pipeline stage:
 
-## Reproducibility
+| Target | Stage | Produces                                     |
+|--------------------|--------|----------------------------------------------|
+| `make data.raw`   | 1    | `data/raw/`, cutout manifest                 |
+| `make data.concepts` | 2  | statmorph concepts merged into manifest      |
+| `make data.labels` | 3    | `data/processed/dataset.parquet` + splits    |
+| `make stage1`      | P4     | Concept predictor checkpoint + predictions   |
+| `make stage2`      | P5     | PySR symbolic rules + rule table             |
+| `make stage3`      | P6     | Conformal prediction sets + coverage report  |
+| `make baselines`  | 7    | End-to-end CNN, dense CBM, XGBoost, SHAP     |
+| `make robustness` | 8    | Cross-survey delta table                     |
+| `make eval`       | 9    | Consolidated figures + `results/metrics.json`|
+| `make all`         | —      | Everything above, in order                   |
+
+## Reproducibility spine (P0)
 
 - Python 3.11 pinned via `uv`.
 - All third-party versions pinned in `pyproject.toml`; PySR's Julia is pinned
